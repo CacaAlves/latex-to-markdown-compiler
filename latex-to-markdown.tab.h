@@ -68,8 +68,7 @@ extern int yydebug;
     IT = 274,
     ITEM = 275,
     ENUMERATE = 276,
-    ITEMIZE = 277,
-    WORDNUMBER = 278
+    ITEMIZE = 277
   };
 #endif
 

@@ -25,138 +25,159 @@
 %token ITEM
 %token ENUMERATE
 %token ITEMIZE
-%token WORDNUMBER
 
 %%
 
-documentLatex: settings {
+documentLatex: settings identification {
 }
 ;
 
-settings: class {
+settings: class package {
     // package can be empty
 } 
 ;
 
-class: CLASS'['WORDNUMBER']''{'WORDNUMBER'}' {
-    printf("aaa\n");
+class: CLASS NAME NAME {
+    printf("class\n");
 }
 ;
 
-// package: /* empty */ 
-// | PACKAGE'['NAME']''{'NAME'}' package {
+package: /* empty */ 
+| PACKAGE NAME package {
+    printf("package\n");
+}
+| PACKAGE NAME NAME package {
+    printf("package\n");
+}
+;
 
-// }
-// ;
+identification: TITLE CONTENT AUTHOR CONTENT {
+    printf("title author\n");
+} 
+| TITLE NAME AUTHOR CONTENT {
+    printf("title author\n");
+}
+| TITLE CONTENT AUTHOR NAME {
+    printf("title author\n");
+}
+| TITLE NAME AUTHOR NAME {
+    printf("title author\n");
+}
+| TITLE CONTENT {
+    printf("title author\n");
+} 
+| TITLE NAME{
+    printf("title author\n");
+}
+;
 
-// identification: TITLE'{'NAME'}' AUTHOR'{'NAME'}' {
-// } | TITLE'{'NAME'}' {
+main: begin bodyList end {
 
-// } 
-// ;
+}
+;
 
-// main: begin bodyList end {
-
-// }
-// ;
-
-// begin: _BEGIN'{'DOCUMENT'}' {
-//     printf(">");
-// }
-// ;
+begin: _BEGIN'{'DOCUMENT'}' {
+    printf("begin\n");
+}
+;
 
 
-// end: _END'{'DOCUMENT'}' {
-// }
-// ;
+end: _END'{'DOCUMENT'}' {
+    printf("end\n");
+}
+;
 
-// bodyList: chapter section subsection bodyList {
+bodyList: /* empty */
+| chapter section subsection bodyList {
 
-// } 
-// | body {
+} 
+| body {
 
-// }
-// ;
+}
+;
 
-// chapter: CHAPTER'{'NAME'}' body chapter {
+chapter: /* empty */
+| CHAPTER NAME body chapter {
 
-// } | CHAPTER'{'NAME'}' {
+} | CHAPTER NAME {
 
-// }
-// ;
+}
+;
 
-// section: SECTION'{'NAME'}' body section {
+section: /* empty */
+| SECTION NAME body section {
 
-// } | body {
+} | body {
 
-// }
-// ;
+}
+;
 
-// subsection: SUBSECTION'{'NAME'}' body subsection {
+subsection: /* empty */
+| SUBSECTION NAME body subsection {
 
-// } | body {
+} | body {
 
-// } ;
+} ;
 
-// body: text {
+body: text {
 
-// } | text body {
+} | text body {
     
-// } | textStyle body {
+} | textStyle body {
 
-// } | lists body {
+} | lists body {
 
-// }
-// ;
+}
+;
 
-// text: PARAGRAPH'{'CONTENT'}' {
+text: PARAGRAPH'{'CONTENT'}' {
 
-// }
-// ;
+}
+;
 
-// textStyle: BF'{'CONTENT'}' {
+textStyle: BF'{'CONTENT'}' {
 
-// } | UNDERLINE'{'CONTENT'}' {
+} | UNDERLINE'{'CONTENT'}' {
 
-// } | IT'{'CONTENT'}' {
+} | IT'{'CONTENT'}' {
 
-// }
-// ;
+}
+;
 
-// lists: numberedList {
+lists: numberedList {
 
-// } | itemList {
+} | itemList {
 
-// }
-// ;
+}
+;
 
-// numberedList: _BEGIN'{'ENUMERATE'}' {
+numberedList: _BEGIN'{'ENUMERATE'}' {
 
-// }
-// ;
+}
+;
 
-// itensLNumbered: ITEM'{'CONTENT'}' {
+itensLNumbered: ITEM'{'CONTENT'}' {
 
-// } | ITEM'{'CONTENT'}' itensLNumbered {
+} | ITEM'{'CONTENT'}' itensLNumbered {
     
-// } | lists {
+} | lists {
 
-// }
-// ;
+}
+;
 
-// itemList: _BEGIN'{'ITEMIZE'}' itensLItens _END'{'ITEMIZE'}' {
+itemList: _BEGIN'{'ITEMIZE'}' itensLItens _END'{'ITEMIZE'}' {
 
-// }
-// ;
+}
+;
 
-// itensLItens: ITEM'{'CONTENT'}' {
+itensLItens: ITEM'{'CONTENT'}' {
 
-// } | ITEM'{'CONTENT'}' itensLItens {
+} | ITEM'{'CONTENT'}' itensLItens {
 
-// } | lists {
+} | lists {
 
-// }
-// ;
+}
+;
 
 
 

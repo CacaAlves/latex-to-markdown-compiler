@@ -93,21 +93,22 @@ SPACE " "
     return yytext[0];
 }
 
-[a-zA-Z0-9]* {
-    return WORDNUMBER;
+"{"[a-zA-Z0-9]+"}" {
+    return NAME;
 }
 
-{WORD} {
+"["[a-zA-Z0-9]+"]" {
     return NAME;
+}
+
+"{"[a-zA-Z0-9" "]+"}" {
+    return CONTENT;
 }
 
 {NUMBER} {
     return NUMBER;
 }
 
-[{WORD}*{NUMBER}*{SPACE}*] {
-    return CONTENT;
-}
 
 \t|\n|{SPACE} {
     /* Ignora o espaço em branco */

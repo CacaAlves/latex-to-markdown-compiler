@@ -139,8 +139,7 @@ extern int yydebug;
     IT = 274,
     ITEM = 275,
     ENUMERATE = 276,
-    ITEMIZE = 277,
-    WORDNUMBER = 278
+    ITEMIZE = 277
   };
 #endif
 
@@ -462,19 +461,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   7
+#define YYLAST   19
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  28
+#define YYNTOKENS  25
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  4
+#define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  4
+#define YYNRULES  13
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  12
+#define YYNSTATES  24
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   278
+#define YYMAXUTOK   277
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -495,10 +494,10 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    24,     2,    25,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    26,     2,    27,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,    23,     2,    24,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -513,14 +512,15 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23
+      15,    16,    17,    18,    19,    20,    21,    22
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    32,    32,    36,    41
+       0,    31,    31,    35,    40,    45,    46,    49,    54,    57,
+      60,    63,    66,    69
 };
 #endif
 
@@ -532,8 +532,8 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "NAME", "NUMBER", "DOCUMENT", "_BEGIN",
   "_END", "CLASS", "PACKAGE", "AUTHOR", "TITLE", "CONTENT", "CHAPTER",
   "SECTION", "SUBSECTION", "PARAGRAPH", "BF", "UNDERLINE", "IT", "ITEM",
-  "ENUMERATE", "ITEMIZE", "WORDNUMBER", "'['", "']'", "'{'", "'}'",
-  "$accept", "documentLatex", "settings", "class", YY_NULLPTR
+  "ENUMERATE", "ITEMIZE", "'{'", "'}'", "$accept", "documentLatex",
+  "settings", "class", "package", "identification", YY_NULLPTR
 };
 #endif
 
@@ -544,11 +544,11 @@ static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,    91,    93,   123,   125
+     275,   276,   277,   123,   125
 };
 # endif
 
-#define YYPACT_NINF (-24)
+#define YYPACT_NINF (-11)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -562,8 +562,9 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -8,   -23,     2,   -24,   -24,   -20,   -24,   -21,   -21,   -17,
-     -20,   -24
+      -5,     2,     8,     4,     5,    10,   -11,    -3,   -11,    13,
+     -11,   -11,     7,     9,     3,    -2,    -1,     5,   -11,   -11,
+     -11,   -11,   -11,   -11
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -571,20 +572,21 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     0,     2,     3,     0,     1,     0,     0,     0,
-       0,     4
+       0,     0,     0,     0,     5,     0,     1,     0,     2,     0,
+       3,     4,    13,    12,     5,     0,     0,     5,     6,    11,
+       9,    10,     8,     7
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -24,   -24,   -24,   -24
+     -11,   -11,   -11,   -11,   -10,   -11
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     3,     4
+      -1,     2,     3,     4,    10,     8
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -592,32 +594,37 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     5,     6,     7,     8,     9,    10,    11
+      12,    19,    21,     1,    18,     5,    17,    23,     6,    13,
+      20,    22,     9,    11,     9,     7,    14,    15,     0,    16
 };
 
 static const yytype_int8 yycheck[] =
 {
-       8,    24,     0,    23,    25,    26,    23,    27
+       3,     3,     3,     8,    14,     3,     3,    17,     0,    12,
+      12,    12,     9,     3,     9,    11,     3,    10,    -1,    10
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     8,    29,    30,    31,    24,     0,    23,    25,    26,
-      23,    27
+       0,     8,    26,    27,    28,     3,     0,    11,    30,     9,
+      29,     3,     3,    12,     3,    10,    10,     3,    29,     3,
+      12,     3,    12,    29
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    28,    29,    30,    31
+       0,    25,    26,    27,    28,    29,    29,    29,    30,    30,
+      30,    30,    30,    30
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     1,     7
+       0,     2,     2,     2,     3,     0,     3,     4,     4,     4,
+       4,     4,     2,     2
 };
 
 
@@ -1313,30 +1320,94 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 32 "latex-to-markdown.y"
-                        {
+#line 31 "latex-to-markdown.y"
+                                       {
 }
-#line 1320 "latex-to-markdown.tab.c"
+#line 1327 "latex-to-markdown.tab.c"
     break;
 
   case 3:
-#line 36 "latex-to-markdown.y"
-                {
+#line 35 "latex-to-markdown.y"
+                        {
     // package can be empty
 }
-#line 1328 "latex-to-markdown.tab.c"
+#line 1335 "latex-to-markdown.tab.c"
     break;
 
   case 4:
-#line 41 "latex-to-markdown.y"
-                                             {
-    printf("aaa\n");
+#line 40 "latex-to-markdown.y"
+                       {
+    printf("class\n");
 }
-#line 1336 "latex-to-markdown.tab.c"
+#line 1343 "latex-to-markdown.tab.c"
+    break;
+
+  case 6:
+#line 46 "latex-to-markdown.y"
+                       {
+    printf("package\n");
+}
+#line 1351 "latex-to-markdown.tab.c"
+    break;
+
+  case 7:
+#line 49 "latex-to-markdown.y"
+                            {
+    printf("package\n");
+}
+#line 1359 "latex-to-markdown.tab.c"
+    break;
+
+  case 8:
+#line 54 "latex-to-markdown.y"
+                                             {
+    printf("title author\n");
+}
+#line 1367 "latex-to-markdown.tab.c"
+    break;
+
+  case 9:
+#line 57 "latex-to-markdown.y"
+                            {
+    printf("title author\n");
+}
+#line 1375 "latex-to-markdown.tab.c"
+    break;
+
+  case 10:
+#line 60 "latex-to-markdown.y"
+                            {
+    printf("title author\n");
+}
+#line 1383 "latex-to-markdown.tab.c"
+    break;
+
+  case 11:
+#line 63 "latex-to-markdown.y"
+                         {
+    printf("title author\n");
+}
+#line 1391 "latex-to-markdown.tab.c"
+    break;
+
+  case 12:
+#line 66 "latex-to-markdown.y"
+                {
+    printf("title author\n");
+}
+#line 1399 "latex-to-markdown.tab.c"
+    break;
+
+  case 13:
+#line 69 "latex-to-markdown.y"
+            {
+    printf("title author\n");
+}
+#line 1407 "latex-to-markdown.tab.c"
     break;
 
 
-#line 1340 "latex-to-markdown.tab.c"
+#line 1411 "latex-to-markdown.tab.c"
 
       default: break;
     }
