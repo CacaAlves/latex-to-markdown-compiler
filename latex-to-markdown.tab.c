@@ -121,15 +121,15 @@ extern int yydebug;
   enum yytokentype
   {
     NAME = 258,
-    NUMBER = 259,
-    DOCUMENT = 260,
-    _BEGIN = 261,
-    _END = 262,
-    CLASS = 263,
-    PACKAGE = 264,
-    AUTHOR = 265,
-    TITLE = 266,
-    CONTENT = 267,
+    CONTENT = 259,
+    NUMBER = 260,
+    DOCUMENT = 261,
+    _BEGIN = 262,
+    _END = 263,
+    CLASS = 264,
+    PACKAGE = 265,
+    AUTHOR = 266,
+    TITLE = 267,
     CHAPTER = 268,
     SECTION = 269,
     SUBSECTION = 270,
@@ -145,7 +145,17 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 8 "latex-to-markdown.y"
+   
+    struct ast *a;
+    char *string;
+
+#line 156 "latex-to-markdown.tab.c"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -461,7 +471,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   19
+#define YYLAST   18
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  25
@@ -519,8 +529,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    31,    31,    35,    40,    45,    46,    49,    54,    57,
-      60,    63,    66,    69
+       0,    39,    39,    45,    50,    55,    56,    59,    64,    67,
+      70,    73,    76,    79
 };
 #endif
 
@@ -529,8 +539,8 @@ static const yytype_int8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "NAME", "NUMBER", "DOCUMENT", "_BEGIN",
-  "_END", "CLASS", "PACKAGE", "AUTHOR", "TITLE", "CONTENT", "CHAPTER",
+  "$end", "error", "$undefined", "NAME", "CONTENT", "NUMBER", "DOCUMENT",
+  "_BEGIN", "_END", "CLASS", "PACKAGE", "AUTHOR", "TITLE", "CHAPTER",
   "SECTION", "SUBSECTION", "PARAGRAPH", "BF", "UNDERLINE", "IT", "ITEM",
   "ENUMERATE", "ITEMIZE", "'{'", "'}'", "$accept", "documentLatex",
   "settings", "class", "package", "identification", YY_NULLPTR
@@ -548,7 +558,7 @@ static const yytype_int16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF (-11)
+#define YYPACT_NINF (-14)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -562,9 +572,9 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -5,     2,     8,     4,     5,    10,   -11,    -3,   -11,    13,
-     -11,   -11,     7,     9,     3,    -2,    -1,     5,   -11,   -11,
-     -11,   -11,   -11,   -11
+       1,     8,    12,     3,     4,    10,   -14,    -1,   -14,    13,
+     -14,   -14,     6,     7,    -3,     2,     5,     4,   -14,   -14,
+     -14,   -14,   -14,   -14
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -580,7 +590,7 @@ static const yytype_int8 yydefact[] =
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -11,   -11,   -11,   -11,   -10,   -11
+     -14,   -14,   -14,   -14,   -13,   -14
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -594,23 +604,23 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      12,    19,    21,     1,    18,     5,    17,    23,     6,    13,
-      20,    22,     9,    11,     9,     7,    14,    15,     0,    16
+      17,    18,    12,    13,    23,    19,    20,     9,    21,    22,
+       1,     5,     6,    11,     9,     7,    14,    15,    16
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     3,     3,     8,    14,     3,     3,    17,     0,    12,
-      12,    12,     9,     3,     9,    11,     3,    10,    -1,    10
+       3,    14,     3,     4,    17,     3,     4,    10,     3,     4,
+       9,     3,     0,     3,    10,    12,     3,    11,    11
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     8,    26,    27,    28,     3,     0,    11,    30,     9,
-      29,     3,     3,    12,     3,    10,    10,     3,    29,     3,
-      12,     3,    12,    29
+       0,     9,    26,    27,    28,     3,     0,    12,    30,    10,
+      29,     3,     3,     4,     3,    11,    11,     3,    29,     3,
+       4,     3,     4,    29
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -1320,94 +1330,96 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 31 "latex-to-markdown.y"
+#line 39 "latex-to-markdown.y"
                                        {
+    // printf("= %4.4g\n> ", eval($2));    /* em vez de printar, vai ser escrever num arquivo */
+    eval((yyvsp[0].a));
 }
-#line 1327 "latex-to-markdown.tab.c"
+#line 1339 "latex-to-markdown.tab.c"
     break;
 
   case 3:
-#line 35 "latex-to-markdown.y"
+#line 45 "latex-to-markdown.y"
                         {
-    // package can be empty
+    (yyval.a) = newast(NT_SETTINGS, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1335 "latex-to-markdown.tab.c"
+#line 1347 "latex-to-markdown.tab.c"
     break;
 
   case 4:
-#line 40 "latex-to-markdown.y"
+#line 50 "latex-to-markdown.y"
                        {
-    printf("class\n");
+    (yyval.a) = newast(NT_CLASS, (yyvsp[-1].string), (yyvsp[-1].string), NULL, NULL);
 }
-#line 1343 "latex-to-markdown.tab.c"
+#line 1355 "latex-to-markdown.tab.c"
     break;
 
   case 6:
-#line 46 "latex-to-markdown.y"
+#line 56 "latex-to-markdown.y"
                        {
-    printf("package\n");
+    (yyval.a) = newast(NT_PACKAGE, (yyvsp[-1].string), NULL, (yyvsp[0].a), NULL);
 }
-#line 1351 "latex-to-markdown.tab.c"
+#line 1363 "latex-to-markdown.tab.c"
     break;
 
   case 7:
-#line 49 "latex-to-markdown.y"
+#line 59 "latex-to-markdown.y"
                             {
-    printf("package\n");
+    (yyval.a) = newast(NT_PACKAGE, (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].a), NULL);
 }
-#line 1359 "latex-to-markdown.tab.c"
+#line 1371 "latex-to-markdown.tab.c"
     break;
 
   case 8:
-#line 54 "latex-to-markdown.y"
+#line 64 "latex-to-markdown.y"
                                              {
-    printf("title author\n");
+    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
 }
-#line 1367 "latex-to-markdown.tab.c"
+#line 1379 "latex-to-markdown.tab.c"
     break;
 
   case 9:
-#line 57 "latex-to-markdown.y"
+#line 67 "latex-to-markdown.y"
                             {
-    printf("title author\n");
+    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
 }
-#line 1375 "latex-to-markdown.tab.c"
+#line 1387 "latex-to-markdown.tab.c"
     break;
 
   case 10:
-#line 60 "latex-to-markdown.y"
+#line 70 "latex-to-markdown.y"
                             {
-    printf("title author\n");
+    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
 }
-#line 1383 "latex-to-markdown.tab.c"
+#line 1395 "latex-to-markdown.tab.c"
     break;
 
   case 11:
-#line 63 "latex-to-markdown.y"
+#line 73 "latex-to-markdown.y"
                          {
-    printf("title author\n");
+    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
 }
-#line 1391 "latex-to-markdown.tab.c"
+#line 1403 "latex-to-markdown.tab.c"
     break;
 
   case 12:
-#line 66 "latex-to-markdown.y"
+#line 76 "latex-to-markdown.y"
                 {
-    printf("title author\n");
+    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[0].string), NULL);
 }
-#line 1399 "latex-to-markdown.tab.c"
+#line 1411 "latex-to-markdown.tab.c"
     break;
 
   case 13:
-#line 69 "latex-to-markdown.y"
+#line 79 "latex-to-markdown.y"
             {
-    printf("title author\n");
+    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[0].string), NULL);
 }
-#line 1407 "latex-to-markdown.tab.c"
+#line 1419 "latex-to-markdown.tab.c"
     break;
 
 
-#line 1411 "latex-to-markdown.tab.c"
+#line 1423 "latex-to-markdown.tab.c"
 
       default: break;
     }

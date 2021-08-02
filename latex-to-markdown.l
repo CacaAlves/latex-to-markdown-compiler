@@ -22,7 +22,7 @@ SPACE " "
     return _END;
 }
 
-\\document {
+"{"document"}" {
     return DOCUMENT;
 }
 
@@ -82,26 +82,19 @@ SPACE " "
     return ITEMIZE;
 }
 
-"<" |
-">" |
-"\\" |
-"," |
-"[" |
-"]" |
-"{" |
-"}" {
-    return yytext[0];
-}
 
-"{"[a-zA-Z0-9]+"}" {
+"{"[a-zA-Z0-9"\\"]+"}" {
+    copystring(&yylval.string, yytext);
     return NAME;
 }
 
-"["[a-zA-Z0-9]+"]" {
+"["[a-zA-Z0-9"\\"]+"]" {
+    copystring(&yylval.string, yytext);
     return NAME;
 }
 
-"{"[a-zA-Z0-9" "]+"}" {
+"{"[a-zA-Z0-9" ""\\"\.@]+"}" {
+    copystring(&yylval.string, yytext);
     return CONTENT;
 }
 
@@ -109,6 +102,14 @@ SPACE " "
     return NUMBER;
 }
 
+"<" |
+">" |
+"\\" |
+"," |
+"[" |
+"]" {
+    return yytext[0];
+}
 
 \t|\n|{SPACE} {
     /* Ignora o espaço em branco */

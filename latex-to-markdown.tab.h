@@ -50,15 +50,15 @@ extern int yydebug;
   enum yytokentype
   {
     NAME = 258,
-    NUMBER = 259,
-    DOCUMENT = 260,
-    _BEGIN = 261,
-    _END = 262,
-    CLASS = 263,
-    PACKAGE = 264,
-    AUTHOR = 265,
-    TITLE = 266,
-    CONTENT = 267,
+    CONTENT = 259,
+    NUMBER = 260,
+    DOCUMENT = 261,
+    _BEGIN = 262,
+    _END = 263,
+    CLASS = 264,
+    PACKAGE = 265,
+    AUTHOR = 266,
+    TITLE = 267,
     CHAPTER = 268,
     SECTION = 269,
     SUBSECTION = 270,
@@ -74,7 +74,17 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 8 "latex-to-markdown.y"
+   
+    struct ast *a;
+    char *string;
+
+#line 85 "latex-to-markdown.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

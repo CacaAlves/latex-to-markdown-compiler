@@ -4,7 +4,14 @@
     #include "latex-to-markdown.h"
 %}
 
-%token NAME
+%union
+{   
+    struct ast *a;
+    char *string;
+};
+
+%token <string> NAME
+%token <string> CONTENT
 %token NUMBER
 // keywords
 %token DOCUMENT
@@ -12,9 +19,8 @@
 %token _END
 %token CLASS
 %token PACKAGE
-%token AUTHOR
+%token AUTHOR 
 %token TITLE
-%token CONTENT
 %token CHAPTER
 %token SECTION
 %token SUBSECTION
@@ -26,133 +32,144 @@
 %token ENUMERATE
 %token ITEMIZE
 
+%type <a> documentLatex identification settings class package main begin end bodyList chapter section subsection body text textStyle lists numberedList itensLNumbered itemList itensLItem
+
 %%
 
 documentLatex: settings identification {
+    // printf("= %4.4g\n> ", eval($2));    /* em vez de printar, vai ser escrever num arquivo */
+    eval($2);
 }
 ;
 
 settings: class package {
-    // package can be empty
+    $$ = newast(NT_SETTINGS, NULL, $2, NULL, NULL);
 } 
 ;
 
 class: CLASS NAME NAME {
-    printf("class\n");
+    $$ = newast(NT_CLASS, NULL, $2, $3, NULL);
 }
 ;
 
-package: /* empty */ 
+package: /* empty */ {
+    $$ = NULL;
+}
 | PACKAGE NAME package {
-    printf("package\n");
+    $$ = newast(NT_PACKAGE, NULL, $2, $3, NULL);
 }
 | PACKAGE NAME NAME package {
-    printf("package\n");
+    $$ = newast(NT_PACKAGE, NULL, $2, $3, $4);
 }
 ;
 
 identification: TITLE CONTENT AUTHOR CONTENT {
-    printf("title author\n");
+    $$ = newidentification(NT_IDENTIFICATION, $2, $4);
 } 
 | TITLE NAME AUTHOR CONTENT {
-    printf("title author\n");
+    $$ = newidentification(NT_IDENTIFICATION, $2, $4);
 }
 | TITLE CONTENT AUTHOR NAME {
-    printf("title author\n");
+    $$ = newidentification(NT_IDENTIFICATION, $2, $4);
 }
 | TITLE NAME AUTHOR NAME {
-    printf("title author\n");
+    $$ = newidentification(NT_IDENTIFICATION, $2, $4);
 }
 | TITLE CONTENT {
-    printf("title author\n");
+    $$ = newidentification(NT_IDENTIFICATION, $2, NULL);
 } 
 | TITLE NAME{
-    printf("title author\n");
+    $$ = newidentification(NT_IDENTIFICATION, $2, NULL);
 }
 ;
 
 main: begin bodyList end {
-
+    $$ = newast(NT_MAIN, $1, $2, $3, NULL);
 }
 ;
 
-begin: _BEGIN'{'DOCUMENT'}' {
-    printf("begin\n");
+begin: _BEGIN DOCUMENT {
+    $$ = newast(NT_BEGIN, NULL, NULL, NULL, NULL);
 }
 ;
 
 
-end: _END'{'DOCUMENT'}' {
-    printf("end\n");
+end: _END DOCUMENT {
+    $$ = newast(NT_END, NULL, NULL, NULL, NULL);
 }
 ;
 
-bodyList: /* empty */
+bodyList: /* empty */ {
+    $$ = NULL;
+}
 | chapter section subsection bodyList {
-
+    $$ = newast(NT_BODYLIST, $1, $2, $3, $4);
 } 
 | body {
-
+    $$ = newast(NT_BODYLIST, $1, NULL, NULL, NULL);
 }
 ;
 
 chapter: /* empty */
-| CHAPTER NAME body chapter {
-
-} | CHAPTER NAME {
-
+| CHAPTER CONTENT body chapter {
+    $$ = newast(NT_CHAPTER, NULL, $2, $3, $4,);
+} | CHAPTER CONTENT {
+    $$ = newast(NT_CHAPTER, NULL, $2, NULL, NULL);
 }
 ;
 
-section: /* empty */
-| SECTION NAME body section {
-
+section: /* empty */ {
+    $$ = NULL;
+}
+| SECTION CONTENT body section {
+    $$ = newast(NT_SECTION, NULL, $2, $3, $4);    
 } | body {
-
+    $$ = newast(NT_SECTION, NULL, $2, NULL, NULL);    
 }
 ;
 
-subsection: /* empty */
-| SUBSECTION NAME body subsection {
-
+subsection: /* empty */ {
+    $$ = NULL;
+}
+| SUBSECTION CONTENT body subsection {
+    $$ = newast(NT_SUBSECTION, NULL, $2, $3, $4);
 } | body {
-
+    $$ = newast(NT_SUBSECTION, NULL, $2, NULL, NULL);
 } ;
 
 body: text {
-
 } | text body {
-    
+    $$ = newbody(NT_BODY, $1, $2, NULL);
 } | textStyle body {
-
+    $$ = newbody(NT_BODY, NULL, $1, $2);
 } | lists body {
-
+    $$ = newbody(NT_BODY, NULL, $1, $2);
 }
 ;
 
 text: PARAGRAPH'{'CONTENT'}' {
-
+    $$ = newparagraph(NT_TEXT, $3);
 }
 ;
 
 textStyle: BF'{'CONTENT'}' {
-
+    $$ = newtextstyle(NT_TEXT, BOLD, $1);
 } | UNDERLINE'{'CONTENT'}' {
-
+    $$ = newtextstyle(NT_TEXT, UNDERLINE, $1);
 } | IT'{'CONTENT'}' {
-
+    $$ = newtextstyle(NT_TEXT, ITALIC, $1);
 }
 ;
 
 lists: numberedList {
-
+    $$ = newast(NT_LIST, $1, NULL, NULL, NULL);
 } | itemList {
-
+    $$ = newast(NT_LIST, $1, NULL, NULL, NULL);
 }
 ;
 
-numberedList: _BEGIN'{'ENUMERATE'}' {
-
+numberedList: _BEGIN'{'ENUMERATE'}' itensLItem _END'{'ENUMERATE'}' {
+    $$ = newast(NT_NUMBEREDLIST, $5, NULL, NULL, NULL);
 }
 ;
 
@@ -165,14 +182,14 @@ itensLNumbered: ITEM'{'CONTENT'}' {
 }
 ;
 
-itemList: _BEGIN'{'ITEMIZE'}' itensLItens _END'{'ITEMIZE'}' {
+itemList: _BEGIN'{'ITEMIZE'}' itensLItem _END'{'ITEMIZE'}' {
 
 }
 ;
 
-itensLItens: ITEM'{'CONTENT'}' {
+itensLItem: ITEM'{'CONTENT'}' {
 
-} | ITEM'{'CONTENT'}' itensLItens {
+} | ITEM'{'CONTENT'}' itensLItem {
 
 } | lists {
 
