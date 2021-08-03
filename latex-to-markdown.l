@@ -54,8 +54,8 @@ SPACE " "
     return SUBSECTION;
 }
 
-\\paragraph {
-    return PARAGRAPH;
+\\par {
+    return PAR;
 }
 
 \\bf {
@@ -70,31 +70,33 @@ SPACE " "
     return IT;
 }
 
-\\item {
+\\item" "[" "a-zA-Z0-9"\\"\.@]+ {
+    copystring(&yylval.string, &yytext[5], false);
     return ITEM;
 }
 
-\\enumerate {
+"{"enumerate"}" {
     return ENUMERATE;
 }
 
-\\itemize {
+"{"itemize"}" {
     return ITEMIZE;
 }
 
 
-"{"[a-zA-Z0-9"\\"]+"}" {
-    copystring(&yylval.string, yytext);
+
+"{"[a-zA-Z0-9"\\"\.@\n]+"}" {
+    copystring(&yylval.string, yytext, true);
     return NAME;
 }
 
-"["[a-zA-Z0-9"\\"]+"]" {
-    copystring(&yylval.string, yytext);
+"["[a-zA-Z0-9"\\"\.@\n]+"]" {
+    copystring(&yylval.string, yytext, true);
     return NAME;
 }
 
-"{"[a-zA-Z0-9" ""\\"\.@]+"}" {
-    copystring(&yylval.string, yytext);
+"{"[a-zA-Z0-9" ""\\"\.@\n]+"}" {
+    copystring(&yylval.string, yytext, true);
     return CONTENT;
 }
 
@@ -109,6 +111,11 @@ SPACE " "
 "[" |
 "]" {
     return yytext[0];
+}
+
+[a-zA-Z0-9\.@]+ {
+    copystring(&yylval.string, yytext, false);
+    return NAME;
 }
 
 \t|\n|{SPACE} {

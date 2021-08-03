@@ -62,7 +62,7 @@ extern int yydebug;
     CHAPTER = 268,
     SECTION = 269,
     SUBSECTION = 270,
-    PARAGRAPH = 271,
+    PAR = 271,
     BF = 272,
     UNDERLINE = 273,
     IT = 274,

@@ -24,4 +24,11 @@
 \author{Viviane Teles de Lucca Maranhao \\ viviane@ime.usp.br} % quem escreveu
 
 \begin{document} % Aqui começa o documento
+\chapter{Introduction}
+\section{PIPIPOPO}
+\section{PIPIPOPO 2}
+\section{PIPIPOPO 3}
+\chapter{Haha 2}
+\section{fodase haha}
+Vejam\par
 \end{document}

@@ -1,7 +1,13 @@
+#ifndef LATEX_TO_MARKDOWN
+#define LATEX_TO_MARKDOWN
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdbool.h>
+
+#define ELEMENT_PADDING "\n\n"
 
 /* interface com o lexer */
 
@@ -11,6 +17,10 @@ void yyerror(char *s, ...);
 
 char *outputfilename;
 FILE *output;
+
+int curChapter;
+int curSection;
+int curSubSection;
 
 enum NodeType
 {
@@ -24,23 +34,22 @@ enum NodeType
     NT_END,
     NT_BODYLIST,
     NT_CHAPTER,
-    NT_SUBCHAPTER,
+    NT_SUBSECTION,
     NT_SECTION,
     NT_BODY,
-    NT_PARAGRAPH,
+    NT_TEXT,
     NT_TEXTSTYLE,
     NT_LIST,
     NT_NUMBEREDLIST,
-    NT_ITENSLNUMBERED,
     NT_ITEMLIST,
-    NT_ITENSLITENS
+    NT_ITENS
 };
 
 enum TextStyle
 {
-    BOLD,
-    ITALIC,
-    UNDERLINE
+    TS_BOLD,
+    TS_ITALIC,
+    TS_UNDERLINE
 };
 
 struct ast  /* abstractic syntactic list */
@@ -67,10 +76,19 @@ struct StructBody
     struct ast *n2;
 };
 
-struct StructParagraph
+struct StructTextSubdivision
 {
     enum NodeType nodetype;
     char *content;
+    struct ast *n1;
+    struct ast *n2;
+};
+
+struct StructText
+{
+    enum NodeType nodetype;
+    char *content;
+    struct StructText *next;
 };
 
 struct StructTextStyle
@@ -80,29 +98,26 @@ struct StructTextStyle
     enum TextStyle textStyle;
 };
 
-struct StructItensLNumbered
+struct StructItens
 {
     enum NodeType nodetype;
     char *content;
     struct ast *next;
 };
 
-struct StructItensLItem
+struct StackChar
 {
-    enum NodeType nodetype;
-    char *content;
-    struct ast *next;
-};
+    char data;
+    struct StackChar *next;
+} StackChar;
 
 /* construção de uma ast */
 struct ast *newast(enum NodeType nodetype, struct ast *n1, struct ast *n2, struct ast *n3, struct ast *n4);
 struct ast *newidentification(enum NodeType nodetype, char *n1, char *n2);
-struct ast *newbody(struct ast *nodetype, char *content, struct ast *n1, struct ast *n2);
-struct ast *newparagraph(struct ast *nodetype, char *content);
-struct ast *newtextstyle(struct ast *nodetype, char *content, enum TextStyle textStyle);
-struct ast *newItensLNumbered(struct ast *nodetype, char *content, struct ast *next);
-struct ast *newItensLItem(struct ast *nodetype, char *content, struct ast *next);
-
+struct ast *newtextsubdivision(enum NodeType nodetype, char *content, struct ast *n1, struct ast *n2);
+struct ast *newtext(enum NodeType nodetype, char *content, struct ast *next);
+struct ast *newtextstyle(enum NodeType nodetype, char *content, enum TextStyle textStyle);
+struct ast *newitens(enum NodeType nodetype, char *content, struct ast *next);
 
 /* avaliação de uma AST */
 void eval(struct ast *);
@@ -111,10 +126,24 @@ void eval(struct ast *);
 void treefree(struct ast *);
 
 /* cria uma nova string e copia */
-void copystring(char **dest, char *src);
+void copystring(char **dest, char *src, bool takeOffBrackets);
 
 /* limpa o arquivo da saída do programa */
 void clearoutput();
 
 /* acrescenta uma string na saída do programa */
 void appendoutput(char * str);
+
+/* funções da stack */
+void push_stack_char(struct StackChar **stack, char data); /*Insere no final*/
+char top_stack_char(struct StackChar *stack);              /*Retorna o dado do último nó*/
+void pop_stack_char(struct StackChar **stack);             /*Remove no fim*/
+void print_stack_char(struct StackChar **stack);           /*Printa a stack*/
+bool is_empty_stack_char(struct StackChar *stack);         /*Return se está vazia*/
+
+/* funções para conversão número - string */
+char *number_to_str(long long int value);
+long long int str_to_number(const char *str);
+char *get_string(long long unsigned int value, bool isNegative);
+
+#endif

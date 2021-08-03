@@ -46,9 +46,9 @@ struct ast *newidentification(enum NodeType nodetype, char *title, char *author)
     return ((struct ast *)a);
 }
 
-struct ast *newbody(struct ast *nodetype, char *content, struct ast *n1, struct ast *n2)
+struct ast *newtextsubdivision(enum NodeType nodetype, char *content, struct ast *n1, struct ast *n2)
 {
-    struct StructBody *a = malloc(sizeof(struct StructBody));
+    struct StructTextSubdivision *a = malloc(sizeof(struct StructTextSubdivision));
 
     if (!a)
     {
@@ -64,9 +64,9 @@ struct ast *newbody(struct ast *nodetype, char *content, struct ast *n1, struct 
     return ((struct ast *)a);
 }
 
-struct ast *newparagraph(struct ast *nodetype, char *content)
+struct ast *newtext(enum NodeType nodetype, char *content, struct ast *next)
 {
-    struct StructParagraph *a = malloc(sizeof(struct StructParagraph));
+    struct StructText *a = malloc(sizeof(struct StructText));
 
     if (!a)
     {
@@ -76,11 +76,12 @@ struct ast *newparagraph(struct ast *nodetype, char *content)
 
     a->nodetype = nodetype;
     a->content = content;
+    a->next = (struct StructText *)next;
 
     return ((struct ast *)a);
 }
 
-struct ast *newtextstyle(struct ast *nodetype, char *content, enum TextStyle textStyle)
+struct ast *newtextstyle(enum NodeType nodetype, char *content, enum TextStyle textStyle)
 {
     struct StructTextStyle *a = malloc(sizeof(struct StructTextStyle));
 
@@ -97,9 +98,9 @@ struct ast *newtextstyle(struct ast *nodetype, char *content, enum TextStyle tex
     return ((struct ast *)a);
 }
 
-struct ast *newItensLNumbered(struct ast *nodetype, char *content, struct ast *next)
+struct ast *newitens(enum NodeType nodetype, char *content, struct ast *next)
 {
-    struct StructItensLNumbered *a = malloc(sizeof(struct StructItensLNumbered));
+    struct StructItens *a = malloc(sizeof(struct StructItens));
 
     if (!a)
     {
@@ -113,217 +114,296 @@ struct ast *newItensLNumbered(struct ast *nodetype, char *content, struct ast *n
 
     return ((struct ast *)a);
 }
-
-struct ast *newItensLItem(struct ast *nodetype, char *content, struct ast *next)
-{
-    struct StructItensLItem *a = malloc(sizeof(struct StructItensLItem));
-
-    if (!a)
-    {
-        yyerror("sem espaço");
-        exit(0);
-    }
-
-    a->nodetype = nodetype;
-    a->content = content;
-    a->next = next;
-
-    return ((struct ast *)a);
-}
-
 
 void eval(struct ast *a)
 {
-    // double v;
-
     if (!a)
     {
-        yyerror("erro interno, null eval");
         return;
     }
 
     switch (a->nodetype)
     {
-        case NT_IDENTIFICATION:
-            appendoutput("# ");
-            appendoutput(((struct StructIdentification *)a)->title);
-            appendoutput("\n");
+    case NT_SETTINGS:
+        /* ignore */
+        break;
+    case NT_CLASS:
+        /* ignore */
+        break;
+    case NT_PACKAGE:
+        /* ignore */
+        break;
 
-            if (((struct StructIdentification *)a)->author)
-            {
-                appendoutput("### ");
-                appendoutput(((struct StructIdentification *)a)->author);
-                appendoutput("\n");
-            }
+    case NT_IDENTIFICATION:;
+        struct StructIdentification *id = (struct StructIdentification *)a;
 
-            appendoutput("\n");
+        appendoutput("# ");
+        appendoutput(id->title);
+        appendoutput(ELEMENT_PADDING);
+
+        if (id->author)
+        {
+            appendoutput("## ");
+            appendoutput(id->author);
+            appendoutput(ELEMENT_PADDING);
+            appendoutput(ELEMENT_PADDING);
+            appendoutput(ELEMENT_PADDING);
+        }
+
+        break;
+
+    case NT_MAIN:
+        eval(a->n2); /* eval bodyList */
+        break;
+
+    case NT_BODYLIST:
+        if (!a)
+            return;
+
+        eval(a->n1);
+        if (a->n2) /* se tem pelo menos o nó 2, tem todos os 4 */
+        {
+            eval(a->n2);
+            eval(a->n3);
+            eval(a->n4);
+        }
+        break;
+
+    case NT_CHAPTER:
+        if (!a)
+            return;
+
+        ;
+        struct StructTextSubdivision *chap = (struct StructTextSubdivision *)a;
+
+        appendoutput("##");
+        appendoutput(chap->content);
+
+        appendoutput(ELEMENT_PADDING);
+
+        curChapter++;
+        curSection = 1;
+        curSubSection = 1;
+
+        if (chap->n1)
+            eval(chap->n1);
+        if (chap->n2)
+            eval(chap->n2);
+
+
+        break;
+    case NT_SECTION:
+        if (!a)
+            return;
+
+        ;
+        struct StructTextSubdivision *sec = (struct StructTextSubdivision *)a;
+
+        if (sec->content != NULL)
+        {
+            appendoutput("### **");
+            appendoutput(number_to_str(curChapter));
+            appendoutput(".");
+            appendoutput(number_to_str(curSection));
+            appendoutput("\t");
+            appendoutput(sec->content);
+            appendoutput("**\n");
+
+            appendoutput(ELEMENT_PADDING);
+
+            curSection++;
+            curSubSection = 1;
+            
+            eval(sec->n1);
+            eval(sec->n2);
+
+        }
+        else
+        {
+            eval(sec->n1);
+        }
+
+        break;
+    case NT_SUBSECTION:
+        if (!a)
+            return;
+
+        ;
+        struct StructTextSubdivision *subsec = (struct StructTextSubdivision *)a;
+
+        if (subsec->content != NULL)
+        {
+            appendoutput("#### **");
+            appendoutput(number_to_str(curChapter));
+            appendoutput(".");
+            appendoutput(number_to_str(curSection));
+            appendoutput(".");
+            appendoutput(number_to_str(curSubSection));
+            appendoutput("\t");
+            appendoutput(subsec->content);
+            appendoutput("**\n");
+
+            appendoutput(ELEMENT_PADDING);
+
+            curSubSection++;
+
+            eval(subsec->n1);
+            eval(subsec->n2);
+
+        }
+        else
+        {
+            eval(subsec->n1);
+        }
+
+        break;
+    case NT_BODY:
+        eval(a->n1);
+        if (a->n2)
+            eval(a->n2);
+        break;
+
+    case NT_TEXT:;
+        struct StructText *txt = (struct StructText *)a;
+        while (txt != NULL)
+        {
+            appendoutput(txt->content);
+            txt = txt->next;
+        }
+
+        appendoutput(ELEMENT_PADDING);
+
+        break;
+
+    case NT_TEXTSTYLE:;
+        struct StructTextStyle *txtst = (struct StructTextStyle *)a;
+
+        switch (txtst->textStyle)
+        {
+        case TS_BOLD:
+            appendoutput("**");
+            appendoutput(txtst->content);
+            appendoutput("**");
+            break;
+        case TS_ITALIC:
+            appendoutput("*");
+            appendoutput(txtst->content);
+            appendoutput("*");
+            break;
+        case TS_UNDERLINE:
+            appendoutput("<ins>");
+            appendoutput(txtst->content);
+            appendoutput("</ins>");
             break;
         default:
-            printf("erro interno: bad node %c\n", a->nodetype);
+            break;
+        }
+
+        break;
+
+    case NT_LIST:
+        eval(a->n1);
+
+        break;
+
+    case NT_NUMBEREDLIST:;
+        struct StructItens *nlist = (struct StructItens *)a;
+        appendoutput("### ");
+        appendoutput(nlist->content);
+
+        while (nlist != NULL)
+        {
+            appendoutput("* ");
+            appendoutput(nlist->content);
+            appendoutput("\n");
+            nlist = (struct StructItens *)nlist->next;
+        }
+
+        appendoutput(ELEMENT_PADDING);
+
+        break;
+
+    case NT_ITEMLIST:;
+        struct StructItens *ilist = (struct StructItens *)a;
+        appendoutput("### ");
+        appendoutput(ilist->content);
+
+        while (ilist != NULL)
+        {
+            appendoutput("1. ");
+            appendoutput(ilist->content);
+            appendoutput("\n");
+            ilist = (struct StructItens *)ilist->next;
+        }
+
+        appendoutput(ELEMENT_PADDING);
+
+        break;
+    case NT_ITENS:
+        break;
+
+    default:
+        printf("erro interno: bad node %d\n", a->nodetype);
     }
-    // {
-    // /* constante */
-    // case 'K':
-    //     v = ((struct numval *)a)->number;
-    //     break;
-
-    // /* referência de nome */
-    // case 'N':
-    //     v = (((struct symref *)a)->s)->value;
-    //     break;
-
-    // case '=':
-    //     v = (((struct symasgn *)a)->s)->value = eval(((struct symasgn *)a)->v);
-    //     break;
-
-    // /* expressões */
-    // case '+':
-    //     v = eval(a->l) + eval(a->r);
-    //     break;
-    // case '-':
-    //     v = eval(a->l) - eval(a->r);
-    //     break;
-    // case '*':
-    //     v = eval(a->l) * eval(a->r);
-    //     break;
-    // case '/':
-    //     v = eval(a->l) / eval(a->r);
-    //     break;
-
-    // /* comparações */
-    // case '1':
-    //     v = (eval(a->l) > eval(a->r) ? 1 : 0);
-    //     break;
-    // case '2':
-    //     v = (eval(a->l) < eval(a->r) ? 1 : 0);
-    //     break;
-    // case '3':
-    //     v = (eval(a->l) != eval(a->r) ? 1 : 0);
-    //     break;
-    // case '4':
-    //     v = (eval(a->l) == eval(a->r) ? 1 : 0);
-    //     break;
-    // case '5':
-    //     v = (eval(a->l) >= eval(a->r) ? 1 : 0);
-    //     break;
-    // case '6':
-    //     v = (eval(a->l) <= eval(a->r) ? 1 : 0);
-    //     break;
-
-    // /* controle de fluxo */
-    // /* gramática permite expressões vazias */
-
-    // /* if / then / else */
-    // case 'I':
-    //     if (eval(((struct flow *)a)->cond) != 0) /* verifica condição */
-    //     {
-    //         if (((struct flow *)a)->tl) /* ramo verdadeiro */
-    //         {
-    //             v = eval(((struct flow *)a)->tl);
-    //         }
-    //         else
-    //         {
-    //             v = 0.0; /* valor default */
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if (((struct flow *)a)->el) /* ramo falso */
-    //         {
-    //             v = eval(((struct flow *)a)->el);
-    //         }
-    //         else
-    //         {
-    //             v = 0.0; /* valor default */
-    //         }
-    //     }
-    //     break;
-
-    // /* while / do */
-    // case 'W':
-    //     v = 0.0; /* valor default */
-
-    //     if (((struct flow *)a)->tl) /* testa se lista de comandos não é vazia */
-    //     {
-    //         while (eval(((struct flow *)a)->cond) != 0) /* avalia a condição */
-    //             v = eval(((struct flow *)a)->tl);       /* avalia comandos */
-    //     }
-    //     break;
-
-    // /* lista de comandos */
-    // case 'L':
-    //     eval(a->l);
-    //     v = eval(a->r);
-    //     break;
-    // case 'F':
-    //     v = callbuiltin((struct fncall *)a);
-    //     break;
-    // case 'C':
-    //     v = calluser((struct ufncall *)a);
-    //     break;
-    // default:
-    //     printf("erro interno: bad node %c\n", a->nodetype);
-    // }
-    // return v;
 }
 
 /* libera uma árvore de AST */
 void treefree(struct ast *a)
 {
-//     switch (a->nodetype)
-//     {
-//     /* duas subarvores */
-//     case '+':
-//     case '-':
-//     case '*':
-//     case '/':
-//     case '1':
-//     case '2':
-//     case '3':
-//     case '4':
-//     case '5':
-//     case '6':
-//     case 'L':
-//         treefree(a->r);
+    //     switch (a->nodetype)
+    //     {
+    //     /* duas subarvores */
+    //     case '+':
+    //     case '-':
+    //     case '*':
+    //     case '/':
+    //     case '1':
+    //     case '2':
+    //     case '3':
+    //     case '4':
+    //     case '5':
+    //     case '6':
+    //     case 'L':
+    //         treefree(a->r);
 
-//     /* uma subarvore*/
-//     case 'C':
-//     case 'F':
-//         treefree(a->l);
+    //     /* uma subarvore*/
+    //     case 'C':
+    //     case 'F':
+    //         treefree(a->l);
 
-//     /* sem subarvore */
-//     case 'K':
-//     case 'N':
-//         // free(a);
-//         break;
+    //     /* sem subarvore */
+    //     case 'K':
+    //     case 'N':
+    //         // free(a);
+    //         break;
 
-//     case '=':
-//         free(((struct symasgn *)a)->v);
-//         break;
+    //     case '=':
+    //         free(((struct symasgn *)a)->v);
+    //         break;
 
-//     /* acima de 3 subarvores */
-//     case 'I':
-//     case 'W':
-//         free(((struct flow *)a)->cond);
-//         if (((struct flow *)a)->tl)
-//             treefree(((struct flow *)a)->tl);
-//         if (((struct flow *)a)->el)
-//             treefree(((struct flow *)a)->el);
-//         break;
+    //     /* acima de 3 subarvores */
+    //     case 'I':
+    //     case 'W':
+    //         free(((struct flow *)a)->cond);
+    //         if (((struct flow *)a)->tl)
+    //             treefree(((struct flow *)a)->tl);
+    //         if (((struct flow *)a)->el)
+    //             treefree(((struct flow *)a)->el);
+    //         break;
 
-//     default:
-//         printf("erro interno: free bad node %c\n", a->nodetype);
-//     }
+    //     default:
+    //         printf("erro interno: free bad node %c\n", a->nodetype);
+    //     }
 
-//     free(a); /* sempre libera o próprio nó */
+    //     free(a); /* sempre libera o próprio nó */
 }
 
-void copystring(char **dest, char *src)
+void copystring(char **dest, char *src, bool takeOffBrackets)
 {
-    const int n = strlen(src) - 2;  /* ignoring '{''}' */
-    (*dest) = (char *)malloc((sizeof(char) * n) + 1);
+    const int n = (takeOffBrackets ? (strlen(src) - 2) /* ignoring '{''}' */ : strlen(src));
+    (*dest) = (char *)malloc((sizeof(char) * n) + 1); /* adding 1 for the '\0' */
 
-    strncpy((*dest), &src[1], n);
+    strncpy((*dest), &src[(takeOffBrackets ? 1 : 0)], n);
     (*dest)[n] = '\0';
 }
 
@@ -333,20 +413,162 @@ void clearoutput()
     fclose(output);
 }
 
-void appendoutput(char * str)
+void appendoutput(char *str)
 {
     fputs(str, output);
+}
+
+struct StackChar *new_node_stack_char(char data)
+{
+    struct StackChar *node = (struct StackChar *)malloc(sizeof(struct StackChar));
+    node->data = data;
+    node->next = NULL;
+
+    return node;
+}
+
+void push_stack_char(struct StackChar **stack, char data)
+{
+    if (stack == NULL)
+        return;
+
+    struct StackChar *node = new_node_stack_char(data);
+
+    if ((*stack) == NULL)
+    {
+        (*stack) = node;
+    }
+    else
+    {
+        struct StackChar *aux = (*stack);
+        (*stack) = node;
+        node->next = aux;
+    }
+}
+
+char top_stack_char(struct StackChar *stack)
+{
+    if (stack == NULL)
+    {
+        // printf("Can't return top! Stack is empty.\n");
+    }
+    else
+    {
+        return stack->data;
+    }
+}
+
+void pop_stack_char(struct StackChar **stack)
+{
+    if (stack == NULL || (*stack) == NULL)
+    {
+        // printf("Can't pop! Empty stack.\n");
+        return;
+    }
+
+    struct StackChar *aux = (*stack);
+    (*stack) = (*stack)->next;
+    free(aux);
+    aux = NULL;
+}
+
+bool is_empty_stack_char(struct StackChar *stack)
+{
+    return (stack == NULL);
+}
+
+void print_stack_char(struct StackChar **stack)
+{
+    if (stack == NULL || (*stack) == NULL)
+    {
+        // printf("Can't print! Empty stack.\n");
+        return;
+    }
+
+    while ((*stack) != NULL)
+    {
+        printf("%c", top_stack_char(*stack));
+        pop_stack_char(stack);
+    }
+    printf("\n");
+}
+
+char *get_string(long long unsigned int value, bool isNegative)
+{
+    struct StackChar *strStack = NULL;
+    int strStackSize = (isNegative ? 1 : 0);
+
+    while (value > 0)
+    {
+        int digit = (value % 10);
+
+        char digitChar = (digit + '0');
+        push_stack_char(&strStack, digitChar);
+        value /= 10;
+        strStackSize++;
+    }
+    char *str = (char *)malloc(sizeof(char) * (strStackSize + 1));
+
+    int i = (isNegative ? 1 : 0);
+    if (isNegative)
+    {
+        str[0] = '-';
+    }
+    for (i; !is_empty_stack_char(strStack); i++)
+    {
+        str[i] = top_stack_char(strStack);
+        pop_stack_char(&strStack);
+    }
+    const int lastStrPosition = strStackSize + 1;
+    str[lastStrPosition] = '\0'; /*Last position*/
+
+    return str;
+}
+
+char *number_to_str(long long int value)
+{
+    bool isNegative = (value < 0);
+
+    if (isNegative)
+    {
+        value *= -1;
+    }
+
+    char *str = get_string(value, isNegative);
+}
+
+long long int str_to_number(const char *str)
+{
+    long long int number = 0;
+    bool isNegative = (str[0] == '-');
+
+    int strLength = strlen(str);
+    long long unsigned int decimalPlace = 1;
+    const int stopFlag = (isNegative ? 0 : -1);
+    for (int i = strLength - 1; i != stopFlag; i--)
+    {
+        int digit = (str[i] - '0');
+        number += (digit * decimalPlace);
+        decimalPlace *= 10;
+    }
+
+    if (isNegative)
+    {
+        number *= -1;
+    }
+
+    return number;
 }
 
 int main(int argc, char **argv)
 {
 
-     if (argc > 1) 
+    if (argc > 1)
     {
         if (!(yyin = fopen(argv[1], "r")))
         {
             perror(argv[1]);
-            return(1);
+            return (1);
         }
     }
 
@@ -355,13 +577,15 @@ int main(int argc, char **argv)
     outputfilename = (char *)malloc(sizeof(char) * n);
     strcat(outputfilename, argv[1]);
     strcat(outputfilename, ".out");
-    outputfilename[n-1] = '\0';
+    outputfilename[n - 1] = '\0';
 
-    printf("%s\n", outputfilename);
     clearoutput();
 
     output = fopen(outputfilename, "a");
 
-    printf("> ");
+    curChapter = 0;
+    curSection = 1;
+    curSubSection = 1;
+
     return yyparse();
 }

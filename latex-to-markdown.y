@@ -24,21 +24,22 @@
 %token CHAPTER
 %token SECTION
 %token SUBSECTION
-%token PARAGRAPH
+%token PAR
 %token BF
 %token UNDERLINE
 %token IT
-%token ITEM
+%token <string> ITEM
 %token ENUMERATE
 %token ITEMIZE
 
-%type <a> documentLatex identification settings class package main begin end bodyList chapter section subsection body text textStyle lists numberedList itensLNumbered itemList itensLItem
+%type <a> documentLatex identification settings class package main begin end bodyList chapter section subsection body text textStyle lists numberedList itemList itens
 
 %%
 
-documentLatex: settings identification {
-    // printf("= %4.4g\n> ", eval($2));    /* em vez de printar, vai ser escrever num arquivo */
+documentLatex: settings identification main {
+    // eval($1);
     eval($2);
+    eval($3);
 }
 ;
 
@@ -48,18 +49,21 @@ settings: class package {
 ;
 
 class: CLASS NAME NAME {
-    $$ = newast(NT_CLASS, NULL, $2, $3, NULL);
+    // $$ = newast(NT_CLASS, NULL, $2, $3, NULL);   /* font-size e estilo de texto ignorados */
+    $$ = newast(NT_CLASS, NULL, NULL, NULL, NULL);
 }
 ;
 
-package: /* empty */ {
+package: /* vazio */ {
     $$ = NULL;
 }
 | PACKAGE NAME package {
-    $$ = newast(NT_PACKAGE, NULL, $2, $3, NULL);
+    // $$ = newast(NT_PACKAGE, NULL, $2, $3, NULL); /* pacotes ignorados */
+    $$ = newast(NT_PACKAGE, NULL, NULL, $3, NULL);  
 }
 | PACKAGE NAME NAME package {
-    $$ = newast(NT_PACKAGE, NULL, $2, $3, $4);
+    // $$ = newast(NT_PACKAGE, NULL, $2, $3, $4); /* pacotes ignorados */
+    $$ = newast(NT_PACKAGE, NULL, NULL, NULL, $4);
 }
 ;
 
@@ -78,7 +82,7 @@ identification: TITLE CONTENT AUTHOR CONTENT {
 | TITLE CONTENT {
     $$ = newidentification(NT_IDENTIFICATION, $2, NULL);
 } 
-| TITLE NAME{
+| TITLE NAME {
     $$ = newidentification(NT_IDENTIFICATION, $2, NULL);
 }
 ;
@@ -99,7 +103,7 @@ end: _END DOCUMENT {
 }
 ;
 
-bodyList: /* empty */ {
+bodyList: /* vazio */ {
     $$ = NULL;
 }
 | chapter section subsection bodyList {
@@ -110,54 +114,71 @@ bodyList: /* empty */ {
 }
 ;
 
-chapter: /* empty */
+chapter: /* vazio */ {
+    $$ = NULL;
+}
 | CHAPTER CONTENT body chapter {
-    $$ = newast(NT_CHAPTER, NULL, $2, $3, $4,);
-} | CHAPTER CONTENT {
-    $$ = newast(NT_CHAPTER, NULL, $2, NULL, NULL);
+    $$ = newtextsubdivision(NT_CHAPTER, $2, $3, $4);
+}
+| CHAPTER NAME body chapter {
+    $$ = newtextsubdivision(NT_CHAPTER, $2, $3, $4);
+}
+| CHAPTER CONTENT {
+    $$ = newtextsubdivision(NT_CHAPTER, $2, NULL, NULL);
+}
+| CHAPTER NAME {
+    $$ = newtextsubdivision(NT_CHAPTER, $2, NULL, NULL);
 }
 ;
 
-section: /* empty */ {
+section: /* vazio */ {
     $$ = NULL;
 }
 | SECTION CONTENT body section {
-    $$ = newast(NT_SECTION, NULL, $2, $3, $4);    
-} | body {
-    $$ = newast(NT_SECTION, NULL, $2, NULL, NULL);    
+    $$ = newtextsubdivision(NT_SECTION, $2, $3, $4);    
+}
+| SECTION NAME body section {
+    $$ = newtextsubdivision(NT_SECTION, $2, $3, $4);    
+}
+| body {
+    $$ = newtextsubdivision(NT_SECTION, NULL, $1, NULL);    
 }
 ;
 
-subsection: /* empty */ {
+subsection: /* vazio */ {
     $$ = NULL;
 }
 | SUBSECTION CONTENT body subsection {
-    $$ = newast(NT_SUBSECTION, NULL, $2, $3, $4);
+    $$ = newtextsubdivision(NT_SUBSECTION, $2, $3, $4);
 } | body {
-    $$ = newast(NT_SUBSECTION, NULL, $2, NULL, NULL);
+    $$ = newtextsubdivision(NT_SECTION, NULL, $1, NULL);
 } ;
 
 body: text {
+    $$ = newast(NT_BODY, $1, NULL, NULL, NULL);
 } | text body {
-    $$ = newbody(NT_BODY, $1, $2, NULL);
+    $$ = newast(NT_BODY, $1, $2, NULL, NULL);
 } | textStyle body {
-    $$ = newbody(NT_BODY, NULL, $1, $2);
+    $$ = newast(NT_BODY, $1, $2, NULL, NULL);
 } | lists body {
-    $$ = newbody(NT_BODY, NULL, $1, $2);
+    $$ = newast(NT_BODY, $1, $2, NULL, NULL);
 }
 ;
 
-text: PARAGRAPH'{'CONTENT'}' {
-    $$ = newparagraph(NT_TEXT, $3);
+text: /* vazio */ {
+    $$ = NULL;
+}
+| NAME text PAR {
+    $$ = newtext(NT_TEXT, $1, $2);
 }
 ;
 
-textStyle: BF'{'CONTENT'}' {
-    $$ = newtextstyle(NT_TEXT, BOLD, $1);
-} | UNDERLINE'{'CONTENT'}' {
-    $$ = newtextstyle(NT_TEXT, UNDERLINE, $1);
-} | IT'{'CONTENT'}' {
-    $$ = newtextstyle(NT_TEXT, ITALIC, $1);
+textStyle: BF CONTENT {
+    $$ = newtextstyle(NT_TEXT, $2, TS_BOLD);
+} | UNDERLINE CONTENT {
+    $$ = newtextstyle(NT_TEXT, $2, TS_UNDERLINE);
+} | IT CONTENT {
+    $$ = newtextstyle(NT_TEXT, $2, TS_ITALIC);
 }
 ;
 
@@ -168,34 +189,19 @@ lists: numberedList {
 }
 ;
 
-numberedList: _BEGIN'{'ENUMERATE'}' itensLItem _END'{'ENUMERATE'}' {
-    $$ = newast(NT_NUMBEREDLIST, $5, NULL, NULL, NULL);
+numberedList: _BEGIN ENUMERATE itens _END ENUMERATE {
+    $$ = newast(NT_NUMBEREDLIST, $3, NULL, NULL, NULL);
 }
 ;
 
-itensLNumbered: ITEM'{'CONTENT'}' {
-
-} | ITEM'{'CONTENT'}' itensLNumbered {
-    
-} | lists {
-
+itemList: _BEGIN ITEMIZE itens _END ITEMIZE {
+    $$ = newast(NT_ITEMLIST, $3, NULL, NULL, NULL);
 }
 ;
 
-itemList: _BEGIN'{'ITEMIZE'}' itensLItem _END'{'ITEMIZE'}' {
-
+itens: ITEM {
+    $$ = newitens(NT_ITENS, $1, NULL);
+} | ITEM itens {
+    $$ = newitens(NT_ITENS, $1, $2);
 }
 ;
-
-itensLItem: ITEM'{'CONTENT'}' {
-
-} | ITEM'{'CONTENT'}' itensLItem {
-
-} | lists {
-
-}
-;
-
-
-
-
