@@ -71,7 +71,7 @@ SPACE " "
 }
 
 \\item" "[" "a-zA-Z0-9"\\"\.@]+ {
-    copystring(&yylval.string, &yytext[5], false);
+    copystring(&yylval.string, &yytext[6], false);
     return ITEM;
 }
 
@@ -90,15 +90,16 @@ SPACE " "
     return NAME;
 }
 
+"{"[a-zA-Z0-9" ""\\"\.@\n]+"}" {
+    copystring(&yylval.string, yytext, true);
+    return CONTENT;
+}
+
 "["[a-zA-Z0-9"\\"\.@\n]+"]" {
     copystring(&yylval.string, yytext, true);
     return NAME;
 }
 
-"{"[a-zA-Z0-9" ""\\"\.@\n]+"}" {
-    copystring(&yylval.string, yytext, true);
-    return CONTENT;
-}
 
 {NUMBER} {
     return NUMBER;

@@ -1,0 +1,24 @@
+\documentclass[12pt]{article}
+\usepackage{lingmacros}         % pacotes, assim como comentários, serão ignorados
+\usepackage{tree-dvips}
+
+\begin{document}
+
+\chapter{Um chapter}
+\section{Uma section sem chapter, como fica}
+
+They look like this:
+
+\subsection{How to handle topicalization}
+
+I'll just assume a tree structure like.
+
+\subsection{Mood}
+
+Mood changes when there is a topic, as well as when
+there is WH-movement. is the mood when
+there is a non-subject topic or WH-phrase in Comp.
+ is the mood when there is a subject topic
+or WH-phrase.
+
+\end{document}

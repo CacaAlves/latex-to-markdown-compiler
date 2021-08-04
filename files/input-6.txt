@@ -28,7 +28,54 @@
 \section{PIPIPOPO}
 \section{PIPIPOPO 2}
 \section{PIPIPOPO 3}
+asd\par
 \chapter{Haha 2}
 \section{fodase haha}
-Vejam\par
+Vejam as\par
+\bf{negro} rato aiaia 
+\underline{rata blanca} \it{italia}\par
+\subsection{seu}
+\subsection{seu pip}
+asd asd\par
+\chapter{mey falo}
+\section{pay attention}
+\bf{negro} rato aiaia 
+\underline{rata blanca} \it{italia}\par
+\subsection{seu}
+\subsection{seu pip}
+asd asd\par
+\chapter{mey falo}
+\section{pay attention}
+\bf{negro} rato aiaia 
+\underline{rata blanca} \it{italia}\par
+\subsection{seu}
+\subsection{seu pip}
+asd asd\par
+\chapter{mey falo}
+\section{pay attention}
+\bf{negro} rato aiaia 
+\underline{rata blanca} \it{italia}\par
+\subsection{seu}
+\subsection{seu pip}
+asd asd\par
+\chapter{mey falo}
+\section{pay attention}
+\bf{negro} rato aiaia 
+\underline{rata blanca} \it{italia}\par
+\subsection{seu}
+\subsection{seu pip}
+asd asd\par
+\chapter{mey falo}
+\section{pay attention}
+\begin{itemize} 
+\item aranha asd
+\item macaoa 2
+\end{itemize}
+\begin{enumerate} 
+\item aranha nn
+\item macao bf
+\end{enumerate}
+asd
+asd \bf{asd}
+asd \par
 \end{document}

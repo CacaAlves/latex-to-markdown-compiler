@@ -22,3 +22,12 @@
 
 \title{Exemplo de \LaTeX} % título
 \author{Viviane Teles de Lucca Maranhao \\ viviane@ime.usp.br} % quem escreveu
+
+\begin{document} % Aqui começa o documento
+\chapter{Introduction a}
+\section{PIPIPOPO as}
+\section{PIPIPOPO 2}
+\chapter{Introduction a}
+\section{PIPIPOPO 3}
+asd\par
+\end{document} % Aqui termina o documento

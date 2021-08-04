@@ -124,6 +124,14 @@ void eval(struct ast *a)
 
     switch (a->nodetype)
     {
+    case NT_DOCUMENT:
+        // eval(a->n1); /* sem eval nos settings */
+        treefree(a->n1);
+        eval(a->n2);
+        treefree(a->n2);
+        eval(a->n3);
+        treefree(a->n3);
+        break;
     case NT_SETTINGS:
         /* ignore */
         break;
@@ -143,9 +151,8 @@ void eval(struct ast *a)
 
         if (id->author)
         {
-            appendoutput("## ");
+            appendoutput("\t");
             appendoutput(id->author);
-            appendoutput(ELEMENT_PADDING);
             appendoutput(ELEMENT_PADDING);
             appendoutput(ELEMENT_PADDING);
         }
@@ -153,30 +160,20 @@ void eval(struct ast *a)
         break;
 
     case NT_MAIN:
-        eval(a->n2); /* eval bodyList */
+        eval(a->n3); /* eval bodyList */
         break;
 
     case NT_BODYLIST:
-        if (!a)
-            return;
-
         eval(a->n1);
         if (a->n2) /* se tem pelo menos o nó 2, tem todos os 4 */
-        {
             eval(a->n2);
-            eval(a->n3);
-            eval(a->n4);
-        }
+
         break;
 
-    case NT_CHAPTER:
-        if (!a)
-            return;
-
-        ;
+    case NT_CHAPTER:;
         struct StructTextSubdivision *chap = (struct StructTextSubdivision *)a;
 
-        appendoutput("##");
+        appendoutput("## ");
         appendoutput(chap->content);
 
         appendoutput(ELEMENT_PADDING);
@@ -185,82 +182,44 @@ void eval(struct ast *a)
         curSection = 1;
         curSubSection = 1;
 
-        if (chap->n1)
-            eval(chap->n1);
-        if (chap->n2)
-            eval(chap->n2);
-
-
         break;
-    case NT_SECTION:
-        if (!a)
-            return;
-
-        ;
+    case NT_SECTION:;
         struct StructTextSubdivision *sec = (struct StructTextSubdivision *)a;
 
-        if (sec->content != NULL)
-        {
-            appendoutput("### **");
-            appendoutput(number_to_str(curChapter));
-            appendoutput(".");
-            appendoutput(number_to_str(curSection));
-            appendoutput("\t");
-            appendoutput(sec->content);
-            appendoutput("**\n");
+        appendoutput("#### **");
+        appendoutput(number_to_str(curChapter));
+        appendoutput(".");
+        appendoutput(number_to_str(curSection));
+        appendoutput("\t");
+        appendoutput(sec->content);
+        appendoutput("**\n");
 
-            appendoutput(ELEMENT_PADDING);
+        appendoutput(ELEMENT_PADDING);
 
-            curSection++;
-            curSubSection = 1;
-            
-            eval(sec->n1);
-            eval(sec->n2);
-
-        }
-        else
-        {
-            eval(sec->n1);
-        }
+        curSection++;
+        curSubSection = 1;
 
         break;
-    case NT_SUBSECTION:
-        if (!a)
-            return;
-
-        ;
+    case NT_SUBSECTION:;
         struct StructTextSubdivision *subsec = (struct StructTextSubdivision *)a;
 
-        if (subsec->content != NULL)
-        {
-            appendoutput("#### **");
-            appendoutput(number_to_str(curChapter));
-            appendoutput(".");
-            appendoutput(number_to_str(curSection));
-            appendoutput(".");
-            appendoutput(number_to_str(curSubSection));
-            appendoutput("\t");
-            appendoutput(subsec->content);
-            appendoutput("**\n");
+        appendoutput("##### **");
+        appendoutput(number_to_str(curChapter));
+        appendoutput(".");
+        appendoutput(number_to_str(curSection));
+        appendoutput(".");
+        appendoutput(number_to_str(curSubSection));
+        appendoutput("\t");
+        appendoutput(subsec->content);
+        appendoutput("**\n");
 
-            appendoutput(ELEMENT_PADDING);
+        appendoutput(ELEMENT_PADDING);
 
-            curSubSection++;
-
-            eval(subsec->n1);
-            eval(subsec->n2);
-
-        }
-        else
-        {
-            eval(subsec->n1);
-        }
+        curSubSection++;
 
         break;
     case NT_BODY:
         eval(a->n1);
-        if (a->n2)
-            eval(a->n2);
         break;
 
     case NT_TEXT:;
@@ -268,7 +227,8 @@ void eval(struct ast *a)
         while (txt != NULL)
         {
             appendoutput(txt->content);
-            txt = txt->next;
+            txt = (struct StructText *)txt->next;
+            appendoutput(" ");
         }
 
         appendoutput(ELEMENT_PADDING);
@@ -284,16 +244,19 @@ void eval(struct ast *a)
             appendoutput("**");
             appendoutput(txtst->content);
             appendoutput("**");
+            appendoutput(" ");
             break;
         case TS_ITALIC:
             appendoutput("*");
             appendoutput(txtst->content);
             appendoutput("*");
+            appendoutput(" ");
             break;
         case TS_UNDERLINE:
             appendoutput("<ins>");
             appendoutput(txtst->content);
             appendoutput("</ins>");
+            appendoutput(" ");
             break;
         default:
             break;
@@ -307,13 +270,11 @@ void eval(struct ast *a)
         break;
 
     case NT_NUMBEREDLIST:;
-        struct StructItens *nlist = (struct StructItens *)a;
-        appendoutput("### ");
-        appendoutput(nlist->content);
+        struct StructItens *nlist = ((struct StructItens *)a->n1);
 
         while (nlist != NULL)
         {
-            appendoutput("* ");
+            appendoutput("1. ");
             appendoutput(nlist->content);
             appendoutput("\n");
             nlist = (struct StructItens *)nlist->next;
@@ -324,13 +285,11 @@ void eval(struct ast *a)
         break;
 
     case NT_ITEMLIST:;
-        struct StructItens *ilist = (struct StructItens *)a;
-        appendoutput("### ");
-        appendoutput(ilist->content);
+        struct StructItens *ilist = ((struct StructItens *)a->n1);
 
         while (ilist != NULL)
         {
-            appendoutput("1. ");
+            appendoutput("* ");
             appendoutput(ilist->content);
             appendoutput("\n");
             ilist = (struct StructItens *)ilist->next;
@@ -347,55 +306,210 @@ void eval(struct ast *a)
     }
 }
 
+// char *get_stuff(int nodetype)
+// {
+//     switch (nodetype)
+//     NT_DOCUMENT" case :
+//     NT_SETTINGS" case :
+//         break;
+//     NT_CLASS" case :
+//         break;
+//     NT_PACKAGE"
+//         break;
+// case :
+//    "NT_IDENTIFICATION""case :
+//     break;
+// T_MAIN" case :
+//     break;
+// NT_BEGIN" case :
+//     break;
+// NT_END" case :
+//     break;
+// NT_BODYLIST" case :
+//     break;
+// NT_CHAPTER"
+//     break;
+// case :
+//    "NT_SUBSECTION" case :
+//     break;
+// NT_SECTION" case :
+//     break;
+// NT_BODY" case :
+//     break;
+// NT_TEXT" case :
+//     break;
+// NT_TEXTSTYLE" case :
+//     break;
+// NT_LIST"
+//     break;
+// case :
+//    "NT_NUMBEREDLIST" case :
+//     break;
+// NT_ITEMLIST" case :
+//     break;
+// NT_ITENS
+//     break;
+// }
+
 /* libera uma árvore de AST */
 void treefree(struct ast *a)
 {
-    //     switch (a->nodetype)
-    //     {
-    //     /* duas subarvores */
-    //     case '+':
-    //     case '-':
-    //     case '*':
-    //     case '/':
-    //     case '1':
-    //     case '2':
-    //     case '3':
-    //     case '4':
-    //     case '5':
-    //     case '6':
-    //     case 'L':
-    //         treefree(a->r);
+    if (!a)
+        return;
 
-    //     /* uma subarvore*/
-    //     case 'C':
-    //     case 'F':
-    //         treefree(a->l);
+    switch (a->nodetype)
+    {
+    case NT_DOCUMENT:
+        treefree(a->n1);
+        treefree(a->n2);
+        treefree(a->n3);
+        break;
+    case NT_SETTINGS:
+        treefree(a->n2);
+        break;
+    case NT_CLASS:
+        /* sem nós filhos */
+        break;
+    case NT_PACKAGE:
+        if (a->n1)
+            treefree(a->n1);
+        break;
+    case NT_IDENTIFICATION:;
+        struct StructIdentification *id = (struct StructIdentification *)a;
 
-    //     /* sem subarvore */
-    //     case 'K':
-    //     case 'N':
-    //         // free(a);
-    //         break;
+        if (id->title)
+        {
+            free(id->title);
+            id->title = NULL;
+        }
+        if (id->author)
+        {
+            free(id->author);
+            id->author = NULL;
+        }
 
-    //     case '=':
-    //         free(((struct symasgn *)a)->v);
-    //         break;
+        break;
+    case NT_MAIN:
+        treefree(a->n1);
+        treefree(a->n2);
+        treefree(a->n3);
+        break;
+    case NT_BEGIN:
+        /* sem nós filhos */
+        break;
+    case NT_END:
+        /* sem nós filhos */
+        break;
+    case NT_BODYLIST:
+        treefree(a->n1);
 
-    //     /* acima de 3 subarvores */
-    //     case 'I':
-    //     case 'W':
-    //         free(((struct flow *)a)->cond);
-    //         if (((struct flow *)a)->tl)
-    //             treefree(((struct flow *)a)->tl);
-    //         if (((struct flow *)a)->el)
-    //             treefree(((struct flow *)a)->el);
-    //         break;
+        if (a->n2)
+            treefree(a->n2);
 
-    //     default:
-    //         printf("erro interno: free bad node %c\n", a->nodetype);
-    //     }
+        break;
+    case NT_CHAPTER:;
+        struct StructTextSubdivision *chapter = (struct StructTextSubdivision *)a;
 
-    //     free(a); /* sempre libera o próprio nó */
+        if (chapter->content)
+        {
+            free(chapter->content);
+            chapter->content = NULL;
+        }
+
+        if (chapter->n1) /* se tiver n1, tem n2 */
+        {
+            treefree(chapter->n1);
+            treefree(chapter->n2);
+        }
+        break;
+    case NT_SUBSECTION:;
+        struct StructTextSubdivision *subsection = (struct StructTextSubdivision *)a;
+
+        if (subsection->content)
+        {
+            free(subsection->content);
+            subsection->content = NULL;
+        }
+
+        treefree(subsection->n1); /* sempre vai ter n1 */
+
+        if (subsection->n2) /* se tiver n1, tem n2 */
+        {
+            treefree(subsection->n2);
+        }
+        break;
+    case NT_SECTION:;
+        struct StructTextSubdivision *section = (struct StructTextSubdivision *)a;
+
+        if (section->content)
+        {
+            free(section->content);
+            section->content = NULL;
+        }
+
+        treefree(section->n1); /* sempre vai ter n1 */
+
+        if (section->n2) /* se tiver n1, tem n2 */
+        {
+            treefree(section->n2);
+        }
+        break;
+    case NT_BODY:
+        treefree(a->n1);
+        treefree(a->n2);
+        break;
+    case NT_TEXT:;
+        struct StructText *text = (struct StructText *)a;
+
+        if (text->content)
+        {
+            free(text->content);
+            text->content = NULL;
+        }
+
+        treefree((struct ast *)text->next);
+        break;
+    case NT_TEXTSTYLE:;
+        struct StructTextStyle *textStyle = (struct StructTextStyle *)a;
+
+        if (textStyle->content)
+        {
+            free(textStyle->content);
+            textStyle->content = NULL;
+        }
+        break;
+    case NT_LIST:
+        treefree(a->n1);
+        break;
+    case NT_NUMBEREDLIST:
+        treefree(a->n1);
+        break;
+    case NT_ITEMLIST:
+        treefree(a->n1);
+        break;
+    case NT_ITENS:;
+        struct StructItens *itens = (struct StructItens *)a;
+
+        if (itens->content)
+        {
+            free(itens->content);
+            itens->content = NULL;
+        }
+
+        if (itens->next)
+        {
+            treefree(itens->next);
+            itens->next = NULL;
+        }
+
+        break;
+
+    default:;
+        // printf("erro interno: free bad node\n");
+    }
+
+    if (a)
+        free(a); /* sempre libera o próprio nó */
 }
 
 void copystring(char **dest, char *src, bool takeOffBrackets)
@@ -514,6 +628,7 @@ char *get_string(long long unsigned int value, bool isNegative)
     {
         str[0] = '-';
     }
+
     for (i; !is_empty_stack_char(strStack); i++)
     {
         str[i] = top_stack_char(strStack);
@@ -584,8 +699,8 @@ int main(int argc, char **argv)
     output = fopen(outputfilename, "a");
 
     curChapter = 0;
-    curSection = 1;
-    curSubSection = 1;
+    curSection = 0;
+    curSubSection = 0;
 
     return yyparse();
 }

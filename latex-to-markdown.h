@@ -24,7 +24,7 @@ int curSubSection;
 
 enum NodeType
 {
-    NT_DOCUMENT,
+    NT_DOCUMENT = 0,
     NT_SETTINGS,
     NT_CLASS,
     NT_PACKAGE,
@@ -52,7 +52,7 @@ enum TextStyle
     TS_UNDERLINE
 };
 
-struct ast  /* abstractic syntactic list */
+struct ast /* abstractic syntactic list */
 {
     enum NodeType nodetype;
     struct ast *n1;
@@ -121,18 +121,15 @@ struct ast *newitens(enum NodeType nodetype, char *content, struct ast *next);
 
 /* avaliação de uma AST */
 void eval(struct ast *);
-
 /* deletar e liberar uma AST */
 void treefree(struct ast *);
 
 /* cria uma nova string e copia */
 void copystring(char **dest, char *src, bool takeOffBrackets);
-
 /* limpa o arquivo da saída do programa */
 void clearoutput();
-
 /* acrescenta uma string na saída do programa */
-void appendoutput(char * str);
+void appendoutput(char *str);
 
 /* funções da stack */
 void push_stack_char(struct StackChar **stack, char data); /*Insere no final*/

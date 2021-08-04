@@ -388,9 +388,9 @@ static const flex_int16_t yy_accept[137] =
         0,    0,   33,   31,   30,   30,    1,   26,   29,   22,
        23,   24,   27,   25,   28,   31,    1,   29,   22,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,   20,    0,    0,   13,    0,
+        0,    0,    0,    0,    0,   21,    0,    0,   13,    0,
         0,    0,   15,    0,    0,    0,    0,    0,    0,   19,
-       21,    0,    0,    0,    0,    0,    0,    0,    3,    0,
+       20,    0,    0,    0,    0,    0,    0,    0,    3,    0,
        12,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    2,    0,    0,    0,    0,    0,    7,
@@ -965,7 +965,7 @@ case 16:
 YY_RULE_SETUP
 #line 73 "latex-to-markdown.l"
 {
-    copystring(&yylval.string, &yytext[5], false);
+    copystring(&yylval.string, &yytext[6], false);
     return ITEM;
 }
 	YY_BREAK
@@ -998,7 +998,7 @@ YY_RULE_SETUP
 #line 93 "latex-to-markdown.l"
 {
     copystring(&yylval.string, yytext, true);
-    return NAME;
+    return CONTENT;
 }
 	YY_BREAK
 case 21:
@@ -1007,36 +1007,36 @@ YY_RULE_SETUP
 #line 98 "latex-to-markdown.l"
 {
     copystring(&yylval.string, yytext, true);
-    return CONTENT;
+    return NAME;
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 103 "latex-to-markdown.l"
+#line 104 "latex-to-markdown.l"
 {
     return NUMBER;
 }
 	YY_BREAK
 case 23:
-#line 108 "latex-to-markdown.l"
-case 24:
 #line 109 "latex-to-markdown.l"
-case 25:
+case 24:
 #line 110 "latex-to-markdown.l"
-case 26:
+case 25:
 #line 111 "latex-to-markdown.l"
-case 27:
+case 26:
 #line 112 "latex-to-markdown.l"
+case 27:
+#line 113 "latex-to-markdown.l"
 case 28:
 YY_RULE_SETUP
-#line 112 "latex-to-markdown.l"
+#line 113 "latex-to-markdown.l"
 {
     return yytext[0];
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 116 "latex-to-markdown.l"
+#line 117 "latex-to-markdown.l"
 {
     copystring(&yylval.string, yytext, false);
     return NAME;
@@ -1045,21 +1045,21 @@ YY_RULE_SETUP
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 121 "latex-to-markdown.l"
+#line 122 "latex-to-markdown.l"
 {
     /* Ignora o espaço em branco */
 }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 124 "latex-to-markdown.l"
+#line 125 "latex-to-markdown.l"
 {
     yyerror("Caracter não reconhecido %c\n", *yytext);
 }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 128 "latex-to-markdown.l"
+#line 129 "latex-to-markdown.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 1066 "latex-to-markdown.lex.c"
@@ -2079,5 +2079,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 128 "latex-to-markdown.l"
+#line 129 "latex-to-markdown.l"
 
