@@ -85,36 +85,24 @@ SPACE " "
 
 
 
-"{"[a-zA-Z0-9"\\"\.@\n]+"}" {
+"{"[a-zA-Z0-9"\\"\.@\n\-"<"">""("")"","\''"!""?"";"":"]+"}" {
     copystring(&yylval.string, yytext, true);
     return NAME;
 }
 
-"{"[a-zA-Z0-9" ""\\"\.@\n]+"}" {
+"{"[a-zA-Z0-9" ""\\"\.@\n\-"<"">""("")"","\''"!""?"";"":"]+"}" {
     copystring(&yylval.string, yytext, true);
     return CONTENT;
 }
 
-"["[a-zA-Z0-9"\\"\.@\n]+"]" {
+"["[a-zA-Z0-9"\\"\.@\n\-"<"">""("")"","\''"!""?"";"":"]+"]" {
     copystring(&yylval.string, yytext, true);
     return NAME;
 }
 
 
-{NUMBER} {
-    return NUMBER;
-}
 
-"<" |
-">" |
-"\\" |
-"," |
-"[" |
-"]" {
-    return yytext[0];
-}
-
-[a-zA-Z0-9\.@]+ {
+[a-zA-Z0-9\.@\-"<"">""("")"","\''"!""?"";"":"]+ {
     copystring(&yylval.string, yytext, false);
     return NAME;
 }
