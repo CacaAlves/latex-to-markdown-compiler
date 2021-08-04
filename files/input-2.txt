@@ -1,5 +1,5 @@
 \documentclass[12pt]{article}
-\usepackage{lingmacros}         % pacotes, assim como comentários, serão ignorados
+\usepackage{lingmacros}        
 \usepackage{tree-dvips}
 
 \begin{document}

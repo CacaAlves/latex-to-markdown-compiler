@@ -174,7 +174,9 @@ void eval(struct ast *a)
     case NT_CLASS:;
         struct StructClass *class = (struct StructClass *)a;
 
-        appendoutput("% \\documentclass[");
+        appendoutput("[//]: # \""); /* um comentário em Markdown */
+
+        appendoutput("\\documentclass[");
         appendoutput(class->content1);
         appendoutput("]");
 
@@ -182,16 +184,20 @@ void eval(struct ast *a)
         appendoutput(class->content2);
         appendoutput("}");
 
+        appendoutput("}\"");
+
         appendoutput(ELEMENT_PADDING);
 
         break;
     case NT_PACKAGE:;
         struct StructPackage *package = (struct StructPackage *)a;
 
+        appendoutput("[//]: # \"\n"); /* um comentário em Markdown */
+
         while (package != NULL)
         {
 
-            appendoutput("% \\package[");
+            appendoutput("\\package[");
             appendoutput(package->content1);
             appendoutput("]");
 
@@ -205,6 +211,10 @@ void eval(struct ast *a)
 
             package = (struct StructPackage *)package->next;
         }
+
+        appendoutput("}\"");
+
+        appendoutput(ELEMENT_PADDING);
 
         break;
 
@@ -239,18 +249,21 @@ void eval(struct ast *a)
     case NT_CHAPTER:;
         struct StructTextSubdivision *chap = (struct StructTextSubdivision *)a;
 
+        curSection = 1;
+        curSubSection = 1;
+
         appendoutput("## ");
         appendoutput(chap->content);
 
         appendoutput(ELEMENT_PADDING);
 
         curChapter++;
-        curSection = 1;
-        curSubSection = 1;
 
         break;
     case NT_SECTION:;
         struct StructTextSubdivision *sec = (struct StructTextSubdivision *)a;
+
+        curSubSection = 1;
 
         appendoutput("#### **");
         appendoutput(number_to_str(curChapter));
@@ -263,7 +276,6 @@ void eval(struct ast *a)
         appendoutput(ELEMENT_PADDING);
 
         curSection++;
-        curSubSection = 1;
 
         break;
     case NT_SUBSECTION:;
@@ -657,6 +669,15 @@ void print_stack_char(struct StackChar **stack)
 
 char *get_string(long long unsigned int value, bool isNegative)
 {
+    if (value == 0)
+    {
+        char *zero = (char *)malloc(sizeof(char) * 2);
+        zero[0] = '0';
+        zero[1] = '\0';
+        
+        return zero;
+    }
+
     struct StackChar *strStack = NULL;
     int strStackSize = (isNegative ? 1 : 0);
 
@@ -682,7 +703,7 @@ char *get_string(long long unsigned int value, bool isNegative)
         str[i] = top_stack_char(strStack);
         pop_stack_char(&strStack);
     }
-    const int lastStrPosition = strStackSize + 1;
+    const int lastStrPosition = strStackSize;
     str[lastStrPosition] = '\0'; /*Last position*/
 
     return str;
@@ -747,8 +768,8 @@ int main(int argc, char **argv)
     output = fopen(outputfilename, "a");
 
     curChapter = 0;
-    curSection = 0;
-    curSubSection = 0;
+    curSection = 1;
+    curSubSection = 1;
 
     return yyparse();
 }

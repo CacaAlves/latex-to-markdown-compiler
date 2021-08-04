@@ -70,7 +70,7 @@ SPACE " "
     return IT;
 }
 
-\\item" "[" "a-zA-Z0-9"\\"\.@]+ {
+\\item" "["" "a-zA-Z0-9"\\"\.@\-"<"">""("")"","\''"!""?"";"":"]+ {
     copystring(&yylval.string, &yytext[6], false);
     return ITEM;
 }

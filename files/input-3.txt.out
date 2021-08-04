@@ -1,3 +1,17 @@
+[//]: # "\documentclass[12pt]{article}}"
+
+[//]: # "
+\package[lingmacros]
+
+\package[tree-dvips]
+
+}"
+
+[//]: # "
+\package[tree-dvips]
+
+}"
+
 ## Um chapter
 
 < > , ( ) - ? ! ; <----- linguagem cuneiforme 
