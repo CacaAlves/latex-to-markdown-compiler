@@ -61,6 +61,21 @@ struct ast /* abstractic syntactic list */
     struct ast *n4;
 };
 
+struct StructClass
+{
+    enum NodeType nodetype;
+    char *content1;
+    char *content2;
+};
+
+struct StructPackage
+{
+    enum NodeType nodetype;
+    char *content1;
+    char *content2;
+    struct StructPackage *next;
+};
+
 struct StructIdentification
 {
     enum NodeType nodetype;
@@ -113,6 +128,8 @@ struct StackChar
 
 /* construção de uma ast */
 struct ast *newast(enum NodeType nodetype, struct ast *n1, struct ast *n2, struct ast *n3, struct ast *n4);
+struct ast *newclass(enum NodeType nodetype, char *content1, char *content2);
+struct ast *newpackage(enum NodeType nodetype, char *content1, char *content2, struct ast *next);
 struct ast *newidentification(enum NodeType nodetype, char *n1, char *n2);
 struct ast *newtextsubdivision(enum NodeType nodetype, char *content, struct ast *n1, struct ast *n2);
 struct ast *newtext(enum NodeType nodetype, char *content, struct ast *next);

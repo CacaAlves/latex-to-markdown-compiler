@@ -529,12 +529,12 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    39,    39,    43,    49,    52,    57,    63,    66,    69,
-      73,    79,    82,    85,    88,    91,    94,    99,   102,   107,
-     113,   118,   121,   124,   127,   130,   133,   136,   139,   144,
-     147,   152,   155,   160,   163,   168,   171,   174,   179,   182,
-     185,   188,   195,   198,   201,   204,   207,   210,   215,   217,
-     222,   227,   232,   234
+       0,    39,    39,    43,    49,    52,    57,    62,    65,    68,
+      71,    76,    79,    82,    85,    88,    91,    96,    99,   104,
+     110,   115,   118,   121,   124,   127,   130,   133,   136,   141,
+     144,   149,   152,   157,   160,   165,   168,   171,   176,   179,
+     182,   185,   192,   195,   198,   201,   204,   207,   212,   214,
+     219,   224,   229,   231
 };
 #endif
 
@@ -1393,7 +1393,7 @@ yyreduce:
   case 4:
 #line 49 "latex-to-markdown.y"
                         {
-    (yyval.a) = newast(NT_SETTINGS, NULL, (yyvsp[0].a), NULL, NULL);
+    (yyval.a) = newast(NT_SETTINGS, (yyvsp[-1].a), (yyvsp[0].a), NULL, NULL);
 }
 #line 1399 "latex-to-markdown.tab.c"
     break;
@@ -1401,7 +1401,7 @@ yyreduce:
   case 5:
 #line 52 "latex-to-markdown.y"
         {
-    (yyval.a) = newast(NT_SETTINGS, NULL, NULL, NULL, NULL);
+    (yyval.a) = newast(NT_SETTINGS, (yyvsp[0].a), NULL, NULL, NULL);
 }
 #line 1407 "latex-to-markdown.tab.c"
     break;
@@ -1409,394 +1409,391 @@ yyreduce:
   case 6:
 #line 57 "latex-to-markdown.y"
                        {
-    // $$ = newast(NT_CLASS, NULL, $2, $3, NULL);   /* font-size e estilo de texto ignorados */
-    (yyval.a) = newast(NT_CLASS, NULL, NULL, NULL, NULL);
+    (yyval.a) = newclass(NT_CLASS, (yyvsp[-1].string), (yyvsp[0].string));   
 }
-#line 1416 "latex-to-markdown.tab.c"
+#line 1415 "latex-to-markdown.tab.c"
     break;
 
   case 7:
-#line 63 "latex-to-markdown.y"
+#line 62 "latex-to-markdown.y"
                       {
-    (yyval.a) = newast(NT_PACKAGE, NULL, NULL, NULL, NULL);  
+    (yyval.a) = newpackage(NT_PACKAGE, (yyvsp[0].string), NULL, NULL);  
 }
-#line 1424 "latex-to-markdown.tab.c"
+#line 1423 "latex-to-markdown.tab.c"
     break;
 
   case 8:
-#line 66 "latex-to-markdown.y"
+#line 65 "latex-to-markdown.y"
                     {
-    (yyval.a) = newast(NT_PACKAGE, NULL, NULL, NULL, NULL);
+    (yyval.a) = newpackage(NT_PACKAGE, (yyvsp[-1].string), (yyvsp[0].string), NULL);
 }
-#line 1432 "latex-to-markdown.tab.c"
+#line 1431 "latex-to-markdown.tab.c"
     break;
 
   case 9:
-#line 69 "latex-to-markdown.y"
+#line 68 "latex-to-markdown.y"
                        {
-    // $$ = newast(NT_PACKAGE, NULL, $2, $3, NULL); /* pacotes ignorados */
-    (yyval.a) = newast(NT_PACKAGE, (yyvsp[0].a), NULL, NULL, NULL);  
+    (yyval.a) = newpackage(NT_PACKAGE, (yyvsp[-1].string), NULL, (yyvsp[0].a));
 }
-#line 1441 "latex-to-markdown.tab.c"
+#line 1439 "latex-to-markdown.tab.c"
     break;
 
   case 10:
-#line 73 "latex-to-markdown.y"
+#line 71 "latex-to-markdown.y"
                             {
-    // $$ = newast(NT_PACKAGE, NULL, $2, $3, $4); /* pacotes ignorados */
-    (yyval.a) = newast(NT_PACKAGE, (yyvsp[0].a), NULL, NULL, NULL);
+    (yyval.a) = newpackage(NT_PACKAGE, (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].a));
 }
-#line 1450 "latex-to-markdown.tab.c"
+#line 1447 "latex-to-markdown.tab.c"
     break;
 
   case 11:
-#line 79 "latex-to-markdown.y"
+#line 76 "latex-to-markdown.y"
                                              {
     (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
 }
-#line 1458 "latex-to-markdown.tab.c"
+#line 1455 "latex-to-markdown.tab.c"
     break;
 
   case 12:
+#line 79 "latex-to-markdown.y"
+                            {
+    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
+}
+#line 1463 "latex-to-markdown.tab.c"
+    break;
+
+  case 13:
 #line 82 "latex-to-markdown.y"
                             {
     (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
 }
-#line 1466 "latex-to-markdown.tab.c"
-    break;
-
-  case 13:
-#line 85 "latex-to-markdown.y"
-                            {
-    (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
-}
-#line 1474 "latex-to-markdown.tab.c"
+#line 1471 "latex-to-markdown.tab.c"
     break;
 
   case 14:
-#line 88 "latex-to-markdown.y"
+#line 85 "latex-to-markdown.y"
                          {
     (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[-2].string), (yyvsp[0].string));
 }
-#line 1482 "latex-to-markdown.tab.c"
+#line 1479 "latex-to-markdown.tab.c"
     break;
 
   case 15:
-#line 91 "latex-to-markdown.y"
+#line 88 "latex-to-markdown.y"
                 {
     (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[0].string), NULL);
 }
-#line 1490 "latex-to-markdown.tab.c"
+#line 1487 "latex-to-markdown.tab.c"
     break;
 
   case 16:
-#line 94 "latex-to-markdown.y"
+#line 91 "latex-to-markdown.y"
              {
     (yyval.a) = newidentification(NT_IDENTIFICATION, (yyvsp[0].string), NULL);
 }
-#line 1498 "latex-to-markdown.tab.c"
+#line 1495 "latex-to-markdown.tab.c"
     break;
 
   case 17:
-#line 99 "latex-to-markdown.y"
+#line 96 "latex-to-markdown.y"
                 {
     (yyval.a) = newast(NT_MAIN, (yyvsp[-1].a), (yyvsp[0].a), NULL, NULL);
 }
-#line 1506 "latex-to-markdown.tab.c"
+#line 1503 "latex-to-markdown.tab.c"
     break;
 
   case 18:
-#line 102 "latex-to-markdown.y"
+#line 99 "latex-to-markdown.y"
                      {
     (yyval.a) = newast(NT_MAIN, (yyvsp[-2].a), (yyvsp[0].a), (yyvsp[-1].a), NULL);
 }
-#line 1514 "latex-to-markdown.tab.c"
+#line 1511 "latex-to-markdown.tab.c"
     break;
 
   case 19:
-#line 107 "latex-to-markdown.y"
+#line 104 "latex-to-markdown.y"
                        {
     (yyval.a) = newast(NT_BEGIN, NULL, NULL, NULL, NULL);
 }
-#line 1522 "latex-to-markdown.tab.c"
+#line 1519 "latex-to-markdown.tab.c"
     break;
 
   case 20:
-#line 113 "latex-to-markdown.y"
+#line 110 "latex-to-markdown.y"
                    {
     (yyval.a) = newast(NT_END, NULL, NULL, NULL, NULL);
 }
-#line 1530 "latex-to-markdown.tab.c"
+#line 1527 "latex-to-markdown.tab.c"
     break;
 
   case 21:
-#line 118 "latex-to-markdown.y"
+#line 115 "latex-to-markdown.y"
                            {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[-1].a), (yyvsp[0].a), NULL, NULL);
 }
-#line 1538 "latex-to-markdown.tab.c"
+#line 1535 "latex-to-markdown.tab.c"
     break;
 
   case 22:
-#line 121 "latex-to-markdown.y"
+#line 118 "latex-to-markdown.y"
           {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1546 "latex-to-markdown.tab.c"
+#line 1543 "latex-to-markdown.tab.c"
     break;
 
   case 23:
-#line 124 "latex-to-markdown.y"
+#line 121 "latex-to-markdown.y"
                    {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[-1].a), (yyvsp[0].a), NULL, NULL);
 }
-#line 1554 "latex-to-markdown.tab.c"
+#line 1551 "latex-to-markdown.tab.c"
     break;
 
   case 24:
-#line 127 "latex-to-markdown.y"
+#line 124 "latex-to-markdown.y"
           {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1562 "latex-to-markdown.tab.c"
+#line 1559 "latex-to-markdown.tab.c"
     break;
 
   case 25:
-#line 130 "latex-to-markdown.y"
+#line 127 "latex-to-markdown.y"
                       {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[-1].a), (yyvsp[0].a), NULL, NULL);
 }
-#line 1570 "latex-to-markdown.tab.c"
+#line 1567 "latex-to-markdown.tab.c"
     break;
 
   case 26:
-#line 133 "latex-to-markdown.y"
+#line 130 "latex-to-markdown.y"
              {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1578 "latex-to-markdown.tab.c"
+#line 1575 "latex-to-markdown.tab.c"
     break;
 
   case 27:
-#line 136 "latex-to-markdown.y"
+#line 133 "latex-to-markdown.y"
                 {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[-1].a), (yyvsp[0].a), NULL, NULL);
 }
-#line 1586 "latex-to-markdown.tab.c"
+#line 1583 "latex-to-markdown.tab.c"
     break;
 
   case 28:
-#line 139 "latex-to-markdown.y"
+#line 136 "latex-to-markdown.y"
        {
     (yyval.a) = newast(NT_BODYLIST, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1594 "latex-to-markdown.tab.c"
+#line 1591 "latex-to-markdown.tab.c"
     break;
 
   case 29:
-#line 144 "latex-to-markdown.y"
+#line 141 "latex-to-markdown.y"
                          {
     (yyval.a) = newtextsubdivision(NT_CHAPTER, (yyvsp[0].string), NULL, NULL);
 }
-#line 1602 "latex-to-markdown.tab.c"
+#line 1599 "latex-to-markdown.tab.c"
     break;
 
   case 30:
-#line 147 "latex-to-markdown.y"
+#line 144 "latex-to-markdown.y"
                {
     (yyval.a) = newtextsubdivision(NT_CHAPTER, (yyvsp[0].string), NULL, NULL);
 }
-#line 1610 "latex-to-markdown.tab.c"
+#line 1607 "latex-to-markdown.tab.c"
     break;
 
   case 31:
-#line 152 "latex-to-markdown.y"
+#line 149 "latex-to-markdown.y"
                          {
     (yyval.a) = newtextsubdivision(NT_SECTION, (yyvsp[0].string), NULL, NULL);    
 }
-#line 1618 "latex-to-markdown.tab.c"
+#line 1615 "latex-to-markdown.tab.c"
     break;
 
   case 32:
-#line 155 "latex-to-markdown.y"
+#line 152 "latex-to-markdown.y"
                {
     (yyval.a) = newtextsubdivision(NT_SECTION, (yyvsp[0].string), NULL, NULL);    
 }
-#line 1626 "latex-to-markdown.tab.c"
+#line 1623 "latex-to-markdown.tab.c"
     break;
 
   case 33:
-#line 160 "latex-to-markdown.y"
+#line 157 "latex-to-markdown.y"
                                {
     (yyval.a) = newtextsubdivision(NT_SUBSECTION, (yyvsp[0].string), NULL, NULL);
 }
-#line 1634 "latex-to-markdown.tab.c"
+#line 1631 "latex-to-markdown.tab.c"
     break;
 
   case 34:
-#line 163 "latex-to-markdown.y"
+#line 160 "latex-to-markdown.y"
                   {
     (yyval.a) = newtextsubdivision(NT_SUBSECTION, (yyvsp[0].string), NULL, NULL);
 }
-#line 1642 "latex-to-markdown.tab.c"
+#line 1639 "latex-to-markdown.tab.c"
     break;
 
   case 35:
-#line 168 "latex-to-markdown.y"
+#line 165 "latex-to-markdown.y"
            {
     (yyval.a) = newast(NT_BODY, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1650 "latex-to-markdown.tab.c"
+#line 1647 "latex-to-markdown.tab.c"
     break;
 
   case 36:
-#line 171 "latex-to-markdown.y"
+#line 168 "latex-to-markdown.y"
             {
     (yyval.a) = newast(NT_BODY, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1658 "latex-to-markdown.tab.c"
+#line 1655 "latex-to-markdown.tab.c"
     break;
 
   case 37:
-#line 174 "latex-to-markdown.y"
+#line 171 "latex-to-markdown.y"
         {
     (yyval.a) = newast(NT_BODY, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1666 "latex-to-markdown.tab.c"
+#line 1663 "latex-to-markdown.tab.c"
     break;
 
   case 38:
-#line 179 "latex-to-markdown.y"
+#line 176 "latex-to-markdown.y"
                 {
     (yyval.a) = newtext(NT_TEXT, (yyvsp[-1].string), (yyvsp[0].a));
 }
-#line 1674 "latex-to-markdown.tab.c"
+#line 1671 "latex-to-markdown.tab.c"
     break;
 
   case 39:
-#line 182 "latex-to-markdown.y"
+#line 179 "latex-to-markdown.y"
            {
     (yyval.a) = newtext(NT_TEXT, (yyvsp[-1].string), NULL);
 }
-#line 1682 "latex-to-markdown.tab.c"
+#line 1679 "latex-to-markdown.tab.c"
     break;
 
   case 40:
-#line 185 "latex-to-markdown.y"
+#line 182 "latex-to-markdown.y"
        {
     (yyval.a) = newtext(NT_TEXT, (yyvsp[0].string), NULL);
 }
-#line 1690 "latex-to-markdown.tab.c"
+#line 1687 "latex-to-markdown.tab.c"
     break;
 
   case 41:
-#line 188 "latex-to-markdown.y"
+#line 185 "latex-to-markdown.y"
       {
     char *space = (char *) malloc(sizeof(char));
     (*space) = ' '; 
     (yyval.a) = newtext(NT_TEXT, space, NULL);
 }
-#line 1700 "latex-to-markdown.tab.c"
+#line 1697 "latex-to-markdown.tab.c"
     break;
 
   case 42:
-#line 195 "latex-to-markdown.y"
+#line 192 "latex-to-markdown.y"
                    {
     (yyval.a) = newtextstyle(NT_TEXTSTYLE, (yyvsp[0].string), TS_BOLD);
 }
-#line 1708 "latex-to-markdown.tab.c"
+#line 1705 "latex-to-markdown.tab.c"
     break;
 
   case 43:
-#line 198 "latex-to-markdown.y"
+#line 195 "latex-to-markdown.y"
              {
     (yyval.a) = newtextstyle(NT_TEXTSTYLE, (yyvsp[0].string), TS_BOLD);
 }
-#line 1716 "latex-to-markdown.tab.c"
+#line 1713 "latex-to-markdown.tab.c"
     break;
 
   case 44:
-#line 201 "latex-to-markdown.y"
+#line 198 "latex-to-markdown.y"
                  {
     (yyval.a) = newtextstyle(NT_TEXTSTYLE, (yyvsp[0].string), TS_UNDERLINE);
 }
-#line 1724 "latex-to-markdown.tab.c"
+#line 1721 "latex-to-markdown.tab.c"
     break;
 
   case 45:
-#line 204 "latex-to-markdown.y"
+#line 201 "latex-to-markdown.y"
                     {
     (yyval.a) = newtextstyle(NT_TEXTSTYLE, (yyvsp[0].string), TS_UNDERLINE);
 }
-#line 1732 "latex-to-markdown.tab.c"
+#line 1729 "latex-to-markdown.tab.c"
     break;
 
   case 46:
-#line 207 "latex-to-markdown.y"
+#line 204 "latex-to-markdown.y"
           {
     (yyval.a) = newtextstyle(NT_TEXTSTYLE, (yyvsp[0].string), TS_ITALIC);
 }
-#line 1740 "latex-to-markdown.tab.c"
+#line 1737 "latex-to-markdown.tab.c"
     break;
 
   case 47:
-#line 210 "latex-to-markdown.y"
+#line 207 "latex-to-markdown.y"
              {
     (yyval.a) = newtextstyle(NT_TEXTSTYLE, (yyvsp[0].string), TS_ITALIC);
 }
-#line 1748 "latex-to-markdown.tab.c"
+#line 1745 "latex-to-markdown.tab.c"
     break;
 
   case 48:
-#line 215 "latex-to-markdown.y"
+#line 212 "latex-to-markdown.y"
                     {
     (yyval.a) = newast(NT_LIST, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1756 "latex-to-markdown.tab.c"
+#line 1753 "latex-to-markdown.tab.c"
     break;
 
   case 49:
-#line 217 "latex-to-markdown.y"
+#line 214 "latex-to-markdown.y"
              {
     (yyval.a) = newast(NT_LIST, (yyvsp[0].a), NULL, NULL, NULL);
 }
-#line 1764 "latex-to-markdown.tab.c"
+#line 1761 "latex-to-markdown.tab.c"
     break;
 
   case 50:
-#line 222 "latex-to-markdown.y"
+#line 219 "latex-to-markdown.y"
                                                     {
     (yyval.a) = newast(NT_NUMBEREDLIST, (yyvsp[-2].a), NULL, NULL, NULL);
 }
-#line 1772 "latex-to-markdown.tab.c"
+#line 1769 "latex-to-markdown.tab.c"
     break;
 
   case 51:
-#line 227 "latex-to-markdown.y"
+#line 224 "latex-to-markdown.y"
                                             {
     (yyval.a) = newast(NT_ITEMLIST, (yyvsp[-2].a), NULL, NULL, NULL);
 }
-#line 1780 "latex-to-markdown.tab.c"
+#line 1777 "latex-to-markdown.tab.c"
     break;
 
   case 52:
-#line 232 "latex-to-markdown.y"
+#line 229 "latex-to-markdown.y"
             {
     (yyval.a) = newitens(NT_ITENS, (yyvsp[0].string), NULL);
 }
-#line 1788 "latex-to-markdown.tab.c"
+#line 1785 "latex-to-markdown.tab.c"
     break;
 
   case 53:
-#line 234 "latex-to-markdown.y"
+#line 231 "latex-to-markdown.y"
                {
     (yyval.a) = newitens(NT_ITENS, (yyvsp[-1].string), (yyvsp[0].a));
 }
-#line 1796 "latex-to-markdown.tab.c"
+#line 1793 "latex-to-markdown.tab.c"
     break;
 
 
-#line 1800 "latex-to-markdown.tab.c"
+#line 1797 "latex-to-markdown.tab.c"
 
       default: break;
     }

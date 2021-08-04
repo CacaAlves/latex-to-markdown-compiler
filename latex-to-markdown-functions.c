@@ -29,6 +29,41 @@ struct ast *newast(enum NodeType nodetype, struct ast *n1, struct ast *n2, struc
     return a;
 }
 
+struct ast *newclass(enum NodeType nodetype, char *content1, char *content2)
+{
+    struct StructClass *a = malloc(sizeof(struct StructClass));
+
+    if (!a)
+    {
+        yyerror("sem espaço");
+        exit(0);
+    }
+
+    a->nodetype = nodetype;
+    a->content1 = content1;
+    a->content2 = content2;
+
+    return ((struct ast *)a);
+}
+
+struct ast *newpackage(enum NodeType nodetype, char *content1, char *content2, struct ast *next)
+{
+    struct StructPackage *a = malloc(sizeof(struct StructPackage));
+
+    if (!a)
+    {
+        yyerror("sem espaço");
+        exit(0);
+    }
+
+    a->nodetype = nodetype;
+    a->content1 = content1;
+    a->content2 = content2;
+    a->next = (struct StructPackage *)next;
+
+    return ((struct ast *)a);
+}
+
 struct ast *newidentification(enum NodeType nodetype, char *title, char *author)
 {
     struct StructIdentification *a = malloc(sizeof(struct StructIdentification));
@@ -125,7 +160,7 @@ void eval(struct ast *a)
     switch (a->nodetype)
     {
     case NT_DOCUMENT:
-        // eval(a->n1); /* sem eval nos settings */
+        eval(a->n1);
         treefree(a->n1);
         eval(a->n2);
         treefree(a->n2);
@@ -133,13 +168,44 @@ void eval(struct ast *a)
         treefree(a->n3);
         break;
     case NT_SETTINGS:
-        /* ignore */
+        eval(a->n1);
+        eval(a->n2);
         break;
-    case NT_CLASS:
-        /* ignore */
+    case NT_CLASS:;
+        struct StructClass *class = (struct StructClass *)a;
+
+        appendoutput("% \\documentclass[");
+        appendoutput(class->content1);
+        appendoutput("]");
+
+        appendoutput("{");
+        appendoutput(class->content2);
+        appendoutput("}");
+
+        appendoutput(ELEMENT_PADDING);
+
         break;
-    case NT_PACKAGE:
-        /* ignore */
+    case NT_PACKAGE:;
+        struct StructPackage *package = (struct StructPackage *)a;
+
+        while (package != NULL)
+        {
+
+            appendoutput("% \\package[");
+            appendoutput(package->content1);
+            appendoutput("]");
+
+            if (package->content2)
+            {
+                appendoutput("{");
+                appendoutput(package->content2);
+                appendoutput("}");
+            }
+            appendoutput(ELEMENT_PADDING);
+
+            package = (struct StructPackage *)package->next;
+        }
+
         break;
 
     case NT_IDENTIFICATION:;
@@ -306,51 +372,6 @@ void eval(struct ast *a)
     }
 }
 
-// char *get_stuff(int nodetype)
-// {
-//     switch (nodetype)
-//     NT_DOCUMENT" case :
-//     NT_SETTINGS" case :
-//         break;
-//     NT_CLASS" case :
-//         break;
-//     NT_PACKAGE"
-//         break;
-// case :
-//    "NT_IDENTIFICATION""case :
-//     break;
-// T_MAIN" case :
-//     break;
-// NT_BEGIN" case :
-//     break;
-// NT_END" case :
-//     break;
-// NT_BODYLIST" case :
-//     break;
-// NT_CHAPTER"
-//     break;
-// case :
-//    "NT_SUBSECTION" case :
-//     break;
-// NT_SECTION" case :
-//     break;
-// NT_BODY" case :
-//     break;
-// NT_TEXT" case :
-//     break;
-// NT_TEXTSTYLE" case :
-//     break;
-// NT_LIST"
-//     break;
-// case :
-//    "NT_NUMBEREDLIST" case :
-//     break;
-// NT_ITEMLIST" case :
-//     break;
-// NT_ITENS
-//     break;
-// }
-
 /* libera uma árvore de AST */
 void treefree(struct ast *a)
 {
@@ -365,14 +386,41 @@ void treefree(struct ast *a)
         treefree(a->n3);
         break;
     case NT_SETTINGS:
+        treefree(a->n1);
         treefree(a->n2);
         break;
-    case NT_CLASS:
-        /* sem nós filhos */
+    case NT_CLASS:;
+        struct StructClass *class = (struct StructClass *)a;
+
+        if (class->content1)
+        {
+            free(class->content1);
+            class->content1 = NULL;
+        }
+        if (class->content2)
+        {
+            free(class->content2);
+            class->content2 = NULL;
+        }
+
         break;
-    case NT_PACKAGE:
-        if (a->n1)
-            treefree(a->n1);
+    case NT_PACKAGE:;
+        struct StructPackage *package = (struct StructPackage *)a;
+
+            if (package->content1)
+            {
+                free(package->content1);
+                package->content1 = NULL;
+            }
+            if (package->content2)
+            {
+                free(package->content2);
+                package->content2 = NULL;
+            }
+
+            eval((struct ast *)package->next);
+            package->next = NULL;
+
         break;
     case NT_IDENTIFICATION:;
         struct StructIdentification *id = (struct StructIdentification *)a;

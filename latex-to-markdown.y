@@ -47,32 +47,29 @@ documentLatex: settings identification main {
 ;
 
 settings: class package {
-    $$ = newast(NT_SETTINGS, NULL, $2, NULL, NULL);
+    $$ = newast(NT_SETTINGS, $1, $2, NULL, NULL);
 }
 | class {
-    $$ = newast(NT_SETTINGS, NULL, NULL, NULL, NULL);
+    $$ = newast(NT_SETTINGS, $1, NULL, NULL, NULL);
 }
 ;
 
 class: CLASS NAME NAME {
-    // $$ = newast(NT_CLASS, NULL, $2, $3, NULL);   /* font-size e estilo de texto ignorados */
-    $$ = newast(NT_CLASS, NULL, NULL, NULL, NULL);
+    $$ = newclass(NT_CLASS, $2, $3);   
 }
 ;
 
 package: PACKAGE NAME {
-    $$ = newast(NT_PACKAGE, NULL, NULL, NULL, NULL);  
+    $$ = newpackage(NT_PACKAGE, $2, NULL, NULL);  
 }
 | PACKAGE NAME NAME {
-    $$ = newast(NT_PACKAGE, NULL, NULL, NULL, NULL);
+    $$ = newpackage(NT_PACKAGE, $2, $3, NULL);
 } 
 | PACKAGE NAME package {
-    // $$ = newast(NT_PACKAGE, NULL, $2, $3, NULL); /* pacotes ignorados */
-    $$ = newast(NT_PACKAGE, $3, NULL, NULL, NULL);  
+    $$ = newpackage(NT_PACKAGE, $2, NULL, $3);
 }
 | PACKAGE NAME NAME package {
-    // $$ = newast(NT_PACKAGE, NULL, $2, $3, $4); /* pacotes ignorados */
-    $$ = newast(NT_PACKAGE, $4, NULL, NULL, NULL);
+    $$ = newpackage(NT_PACKAGE, $2, $3, $4);
 }
 ;
 
